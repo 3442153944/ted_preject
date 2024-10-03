@@ -218,6 +218,7 @@ async function submitChanges(type) {
         let res=await edit_user_info('self_website_introduce',null,null,null,data.value.self_website_introduce)
         if(res.status==200){
             message.value=res.msg
+            
         }
     }
     showMessage()
