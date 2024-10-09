@@ -49,6 +49,7 @@ let recommend_video_list=ref([])
 function jump_link(video_id){
     router.push('/content_page')
     store.commit('set_video_id',video_id)
+    console.log(video_id)
 }
 
 // 主视频的播放路径

@@ -27,6 +27,7 @@ class GetVideoInfo(APIView):
                     sql='''
                     select video_info.id, title,  author_id, video_info.introduce as 'video_introduce',
                      create_time, tags, video_file_path, auth_user.introduce as 'introduce',
+                     video_info.video_cover_path,
                     video_status,username,auth_user.introduce,count(watch_table.id) as 'watch_count',
                     count(like_table.id) as 'like_count',count(collect_table.id) as 'collect_count',
                     auth_user.user_tags,auth_user.self_website,auth_user.self_website_introduce,auth_user.avatar_path

@@ -5,6 +5,7 @@ from .views.edit_user_info import EditUserInfo
 from .views.get_all_userinfo import GetAllUserInfo
 from .views.get_userinfo import GetUserInfo
 from .views.register import RegisterView
+from .views.update_top_video import UpdateTopVideo
 
 urlpatterns=[
     path('RegisterView/',RegisterView.as_view(),name='RegisterView'),
@@ -17,4 +18,6 @@ urlpatterns=[
     #编辑用户信息
     path('EditUserAvatar/',EditUserAvatar.as_view(),name='EditUserAvatar'),
     #编辑用户头像
+    path('UpdateTopVideo/',UpdateTopVideo.as_view(),name='UpdateTopVideo'),
+    #更新置顶视频
 ]

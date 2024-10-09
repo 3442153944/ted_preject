@@ -33,7 +33,7 @@ class RecommendVideo(APIView):
                 rows = [dict(zip(columns, row)) for row in result]
 
                 # 使用 id 去重
-                unique_rows = {row['id']: row for row in rows}.values()
+                unique_rows = {row['video_id']: row for row in rows}.values()
 
                 # 如果去重后视频不足 15 个，补满并允许重复选择
                 if len(unique_rows) < 15:

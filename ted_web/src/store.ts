@@ -1,5 +1,6 @@
 import { createStore } from 'vuex';
 import { RootState } from './store.d'; // 引入RootState类型
+import createPersistedState from 'vuex-persistedstate'; // 引入持久化插件
 
 // 最大栈深度
 const MAX_STACK_DEPTH = 500;
@@ -8,7 +9,7 @@ const store = createStore<RootState>({
     state: {
         pageStatus: {
             login_page_show: false,
-            index_page_show:true,
+            index_page_show: true,
             register_page_show: false,
         },
         content_page: {},
@@ -85,6 +86,18 @@ const store = createStore<RootState>({
         video_id: (state:any) => state.video_id,
         is_login: (state:any) => state.is_login
     },
+    // 添加持久化插件
+    plugins: [
+        createPersistedState({
+            storage: window.localStorage, // 选择 localStorage 进行持久化存储
+            // 可以根据需求选择哪些状态需要持久化
+            reducer: (state) => ({
+                pageStatus: state.pageStatus,
+                video_id: state.video_id,
+                is_login: state.is_login,
+            }),
+        }),
+    ],
 });
 
 export default store;

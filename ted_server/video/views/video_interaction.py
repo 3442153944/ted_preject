@@ -45,6 +45,8 @@ class VideoInteraction(APIView):
                         return self.handle_like(cursor, user_id, video_id, now)
                     elif interaction_type == 'collect':
                         return self.handle_collect(cursor, user_id, video_id, now)
+                    elif interaction_type == 'watch':
+                        return self.handle_watch(cursor, user_id, video_id, now)
                     else:
                         return JsonResponse({'status': 400, 'msg': '未知的操作类型'}, status=400)
 
@@ -100,3 +102,27 @@ class VideoInteraction(APIView):
             if cursor.rowcount != 1:
                 raise Exception('收藏操作失败，回滚操作')
             return JsonResponse({'status': 200, 'msg': '收藏成功'}, status=200)
+
+    def handle_watch(self, cursor, user_id, video_id, now):
+        # 观看新增逻辑
+        query_sql='''
+        select * from watch_table where user_id=%s and video_id=%s
+        '''
+        cursor.execute(query_sql, [user_id, video_id])
+        watch_result = cursor.fetchone()
+        if watch_result:
+            # 用户已观看，更新观看时间
+            update_watch_sql = '''UPDATE watch_table SET watch_time = %s 
+            WHERE user_id = %s AND video_id = %s'''
+            cursor.execute(update_watch_sql, [now, user_id, video_id])
+            if cursor.rowcount != 1:
+                raise Exception('更新观看时间失败，回滚操作')
+            return JsonResponse({'status': 200, 'msg': '更新观看时间成功'}, status=200)
+        else:
+            # 用户未观看，执行新增操作
+            insert_watch_sql = '''INSERT INTO watch_table (video_id, user_id, watch_time) 
+            VALUES (%s, %s, %s)'''
+            cursor.execute(insert_watch_sql, [video_id, user_id, now])
+            if cursor.rowcount != 1:
+                raise Exception('新增观看记录失败，回滚操作')
+            return JsonResponse({'status': 200, 'msg': '新增观看记录成功'}, status=200)

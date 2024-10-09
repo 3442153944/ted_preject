@@ -4,7 +4,9 @@
             <div class="video_info">
                 <div class="video_box">
                     <!-- 主视频播放器 -->
-                    <video class="main-video" controls :src="video_path" @timeupdate="updateMainVideoTime"></video>
+                    <video class="main-video" controls 
+                    :src="'http://localhost:8000/static/video/'+main_video_info.video_file_path" 
+                    @timeupdate="updateMainVideoTime"></video>
                     <div class="info_item">
                         <div class="main_video_tite">
                             {{main_video_info.title}}
@@ -65,7 +67,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted,computed } from 'vue'
+import { ref, onMounted,computed,watch,nextTick } from 'vue'
 import recommend_box from './recommend_box.vue';
 import speaker_box from './speaker_box.vue';
 import the_end_page from './the_end_page.vue';
@@ -134,6 +136,20 @@ onMounted(async function(){
     res.tags=res.tags.split(/[,，]/)
     main_video_info.value=res
     console.log(res)
+    nextTick(async()=>{
+        await interaction_video(video_id.value,'watch')
+    })
+})
+
+watch(video_id,async()=>{
+    let res=await get_video_info(video_id.value)
+    res=res.data
+    res.tags=res.tags.split(/[,，]/)
+    main_video_info.value=res
+    console.log(res)
+    nextTick(async()=>{
+        await interaction_video(video_id.value,'watch')
+    })
 })
 
 </script>
