@@ -82,6 +82,24 @@ class GetAllUserInfo(APIView):
                         cursor.execute(collect_sql,(row['id'],))
                         row['collect_count']=cursor.fetchone()[0]
 
+                if collected_video_info:
+                    watch_sql='''
+                    select count(*) from watch_table where video_id=%s
+                    '''
+                    like_sql='''
+                    select count(*) from like_table where video_id=%s
+                    '''
+                    collect_sql='''
+                    select count(*) from collect_table where video_id=%s
+                    '''
+                    for row in collected_video_info:
+                        cursor.execute(watch_sql,(row['id'],))
+                        row['watch_count']=cursor.fetchone()[0]
+                        cursor.execute(like_sql,(row['id'],))
+                        row['like_count']=cursor.fetchone()[0]
+                        cursor.execute(collect_sql,(row['id'],))
+                        row['collect_count']=cursor.fetchone()[0]
+
                 # 组合数据
                 response_data = {
                     'user_info': user_data,
