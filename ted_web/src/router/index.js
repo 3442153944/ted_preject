@@ -6,6 +6,7 @@ import register from '../components/register_page/register.vue'
 import root from '../components/root.vue'
 import index_page from '../components/index_page.vue'
 import user_center from '../components/user_center/user_center.vue'
+import upload_page from '../components/video_upload_page/upload_page.vue'
 
 const routes = [
   {
@@ -29,6 +30,11 @@ const routes = [
             path:'user_center',
             name:'user_center',
             component:user_center//用户中心
+          },
+          {
+            path:'upload_page',
+            name:'upload_page',
+            component:upload_page//上传页面
           }
         ]
       }

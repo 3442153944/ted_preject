@@ -51,7 +51,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:10000",  # 或者这个
 ]
 #跨域允许列表
-CSRF_TRUSTED_ORIGINS=[
+CSRF_TRUSTED_ORIGINS = [
     "http://localhost:10000",
     "http://127.0.0.1:10000"
 ]
@@ -66,7 +66,8 @@ INSTALLED_APPS = [
     'corsheaders',
     "user.apps.UserConfig",
     "comment.apps.CommentConfig",
-    "video.apps.VideoConfig"  # Enable CORS support
+    "video.apps.VideoConfig",  # Enable CORS support
+    #'channels',  #websoket支持
 ]
 
 MIDDLEWARE = [
@@ -91,7 +92,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24*30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=24 * 30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
     # 其他配置...
 }
@@ -110,13 +111,20 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # 将静态文件存放在项目的 static 文件夹中
 ]
+#配置websoket
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 # 禁用 CSRF Cookie
 CSRF_COOKIE_HTTPONLY = False  # CSRF 不再依赖 cookies，禁用该选项
-CSRF_USE_SESSIONS = False     # 不使用 Session 存储 CSRF Token
-CSRF_COOKIE_NAME = 'csrftoken'        # 不使用 cookie 名称
+CSRF_COOKIE_NAME = 'csrftoken'  # 不使用 cookie 名称
 CORS_ALLOW_CREDENTIALS = True
-DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880*100  # 5 MB
-
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880 * 100  # 5 MB
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views.get_video_info import GetVideoInfo
 from .views.recommend_video import RecommendVideo
+from .views.upload_video import UploadVideo
 from .views.video_interaction import VideoInteraction
 
 urlpatterns=[
@@ -11,4 +12,6 @@ urlpatterns=[
     #推荐视频
     path('VideoInteraction/',VideoInteraction.as_view(),name='VideoInteraction'),
     #视频互动
+    path('UploadVideo/',UploadVideo.as_view(),name='UploadVideo'),
+    #视频上传
 ]

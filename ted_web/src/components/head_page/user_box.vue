@@ -117,7 +117,7 @@ onUnmounted(() => {
 
 .info_dropdown_box {
     width: auto;
-    height: auto;
+    height: 0;
     display: flex;
     flex-direction: column;
     position: absolute;
@@ -136,6 +136,7 @@ onUnmounted(() => {
 .info_dropdown_box_show {
     opacity: 1; /* 显示时透明度为1 */
     transform: translateY(0); /* 恢复到原位 */
+    height: auto;
 }
 
 .info_dropdown_box_hide {

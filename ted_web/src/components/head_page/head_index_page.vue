@@ -13,12 +13,9 @@
       </div>
       <div class="lable_box">
         <div class="lable_item lable_item_hover">
-          <span>看</span>
+          <span>投稿</span>
           <div class="lable_item_dropdown">
-            <span>演讲</span>
-            <span>播放列表</span>
-            <span>系列</span>
-            <span>视频</span>
+            <span @click="show_video_upload_page">投稿视频</span>
           </div>
         </div>
         <div class="lable_item lable_item_hover">
@@ -93,6 +90,10 @@ function show_login_page() {
 function show_register_page() {
   //store.commit('SET_SINGLE_PAGE_STATUS',{'key':'register_page_show','value':true})
   router.push('/register')
+}
+//跳转视频上传页面
+function show_video_upload_page() {
+  router.push('/upload_page')
 }
 
 </script>
@@ -173,12 +174,14 @@ function show_register_page() {
   border-radius: 5px;
   justify-content: center;
   align-items: center;
+  text-align: center;
 }
 
 .lable_item:hover .lable_item_dropdown {
   opacity: 1;
   visibility: visible;
   transform: translateY(0);
+  align-items: center;
 }
 
 .lable_item_hover:hover {
