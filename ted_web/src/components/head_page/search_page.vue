@@ -14,11 +14,25 @@
                 <div v-if="showVideoResults" class="result video_result">
                     <div class="video_item" v-for="(item, index) in video_data" :key="index">
                         <div class="video_card" @click="to_content(item.video_id)">
-                            <img :src="'http://localhost:8000/static/img/img/'+item.video_cover_path" alt="视频封面" />
+                            <div style="position: relative;">
+                                <img :src="'http://localhost:8000/static/img/img/' +
+                                    (item.video_cover_path ? item.video_cover_path : '102718099_p0.png')" alt="视频封面" />
+                                <span class="watch_count">
+                                    <img src="http://localhost:8000/static/svg/播放.svg" class="icon">
+                                    {{ item.watch_count }}</span>
+                            </div>
                             <div class="video_info">
-                                <h3>{{ item.video_title }}</h3>
-                                <p>作者: {{ item.author }}</p>
-                                <p>观看次数: {{ item.watch_count }}</p>
+                                <span>{{ item.video_title }}</span>
+
+                            </div>
+                            <div class="video_author">
+                                <div class="author_avatar">
+                                    <img :src="'http://localhost:8000/static/img/thumbnail/' +
+                                        (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'" alt="作者头像" />
+                                </div>
+                                <div class="author_info">
+                                    <span>{{ item.author }}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -26,10 +40,10 @@
                 <div v-if="showUserResults" class="result user_result">
                     <div class="user_item" v-for="(item, index) in user_data" :key="index">
                         <div class="user_card">
-                            <img :src="'http://localhost:8000/static/img/thumbnail/'+
-                            (item.avatar_path?item.avatar_path:'227708771630839632276')+'.png'" alt="用户头像" />
+                            <img :src="'http://localhost:8000/static/img/thumbnail/' +
+                                (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'" alt="用户头像" />
                             <div class="user_info">
-                                <h3>{{ item.username }}</h3>
+                                <span>{{ item.username }}</span>
                                 <p>{{ item.introduce }}</p>
                             </div>
                         </div>
@@ -44,7 +58,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, watch } from 'vue';
+import { ref, defineProps, watch, defineEmits } from 'vue';
 import search from './search';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
@@ -61,6 +75,8 @@ const props = defineProps({
         default: ''
     }
 });
+
+const emit = defineEmits(['close_page', 'clear'])
 
 watch(() => props.search_key, async (newVal) => {
     if (newVal) {
@@ -90,6 +106,8 @@ const store = useStore();
 const to_content = (id) => {
     router.push('/content_page');
     store.commit('set_video_id', id);
+    emit('close_page');
+    emit('clear');
 };
 </script>
 
@@ -102,6 +120,7 @@ const to_content = (id) => {
     display: flex;
     background-color: rgba(255, 255, 255, 1);
     z-index: 10;
+    padding: 10px;
 }
 
 .title {
@@ -129,12 +148,32 @@ const to_content = (id) => {
     flex-direction: column;
 }
 
-.video_item,
+.video_item {
+    margin: 10px;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    flex-direction: column;
+}
+
 .user_item {
     margin: 10px 0;
 }
 
-.video_card,
+.video_card {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    transition: box-shadow 0.3s;
+    flex-direction: column;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
 .user_card {
     display: flex;
     align-items: center;
@@ -142,20 +181,74 @@ const to_content = (id) => {
     border-radius: 5px;
     padding: 10px;
     transition: box-shadow 0.3s;
+    flex-direction: column;
 }
 
-.video_card:hover,
+.video_card:hover {
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
 .user_card:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.video_info,
-.user_info {
-    margin-left: 10px;
+.video_card img {
+    width: 400px;
+    height: auto;
+    max-height: 300px;
+    min-height: 250px;
 }
 
-.video_info h3,
-.user_info h3 {
-    margin: 0;
+.video_info {
+    display: flex;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.user_info {
+    display: flex;
+}
+
+.video_result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.video_author {
+    height: 60px;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.video_author img {
+    width: 55px;
+    height: 55px;
+    object-fit: cover;
+    border-radius: 50%;
+    min-height: 0;
+}
+
+.watch_count {
+    position: absolute;
+    bottom: 10px;
+    left: 5px;
+    background-color: rgba(141, 141, 141, 0.5);
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.watch_count img{
+    width: 15px;
+    height: 15px;
+    object-fit: cover;
+    min-height: 0;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
 }
 </style>

@@ -64,7 +64,9 @@
         </div>
       </div>
     </div>
-      <search_page v-if="search_input_box_show" :search_key="search_key"></search_page>
+      <search_page v-if="search_input_box_show" :search_key="search_key"
+       @close_page="search_input_box_show = false"
+       @clear="search_key = ''"></search_page>
   </div>
 </template>
 
