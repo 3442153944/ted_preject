@@ -28,7 +28,8 @@
                             <div class="video_author">
                                 <div class="author_avatar">
                                     <img :src="'http://localhost:8000/static/img/thumbnail/' +
-                                        (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'" alt="作者头像" />
+                                        (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'"
+                                        alt="作者头像" />
                                 </div>
                                 <div class="author_info">
                                     <span>{{ item.author }}</span>
@@ -40,11 +41,34 @@
                 <div v-if="showUserResults" class="result user_result">
                     <div class="user_item" v-for="(item, index) in user_data" :key="index">
                         <div class="user_card">
-                            <img :src="'http://localhost:8000/static/img/thumbnail/' +
-                                (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'" alt="用户头像" />
                             <div class="user_info">
-                                <span>{{ item.username }}</span>
-                                <p>{{ item.introduce }}</p>
+                                <div class="user_avatar">
+                                    <img :src="'http://localhost:8000/static/img/thumbnail/' +
+                                    (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'" alt="用户头像" />
+                                </div>
+                                <div class="user_name">
+                                    <span style="cursor: pointer;">{{ item.username }}</span>
+                                    <span>&nbsp;{{ item.introduce }}</span>
+                                    <div class="user_follow" :class="item.is_follow?'is_follow':'not_follow'" 
+                                    @click="follow_user(index,item.user_id)">
+                                        <span>{{item.is_follow?'已关注':'关注'}}</span>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            <div class="user_video_list" v-if="item.video_data.length">
+                                <div class="video_list_item"  v-for="(item,index) in item.video_data" :key="index">
+                                    <div class="v_list_item" v-if="index<3">
+                                        <div class="video_cover" @click="to_content(item.id)">
+                                            <img :src="'http://localhost:8000/static/img/img/'+
+                                            (item.video_cover_path?item.video_cover_path:'102718099_p0.png')" alt="封面">
+                                        </div>
+                                        <span>{{item.title}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="user_video_list" v-else>
+                                <span>该用户暂无视频</span>
                             </div>
                         </div>
                     </div>
@@ -62,6 +86,7 @@ import { ref, defineProps, watch, defineEmits } from 'vue';
 import search from './search';
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
+import update_follow_status from './update_follow_status';
 
 let result = ref();
 let video_data = ref([]);
@@ -83,6 +108,7 @@ watch(() => props.search_key, async (newVal) => {
         result.value = await search(newVal);
         video_data.value = result.value.video_data;
         user_data.value = result.value.user_data;
+        console.log(user_data.value);
     }
 });
 
@@ -109,6 +135,20 @@ const to_content = (id) => {
     emit('close_page');
     emit('clear');
 };
+
+const follow_user=async (index,id)=>{
+    if(user_data.value[index].is_follow==0 || user_data.value[index].is_follow==null){
+        user_data.value[index].is_follow=1;
+        const result=await update_follow_status(id,'add');
+        console.log(result)
+    }
+    else{
+        user_data.value[index].is_follow=0;
+        const result=await update_follow_status(id,'cancel');
+        console.log(result)
+    }
+    console.log(id);
+}
 </script>
 
 <style scoped>
@@ -157,7 +197,11 @@ const to_content = (id) => {
 }
 
 .user_item {
-    margin: 10px 0;
+    width: calc(100% / 3 - 20px);
+    height: 250px;
+    display: flex;
+    min-width: 350px;
+    min-height: 250px;
 }
 
 .video_card {
@@ -176,12 +220,67 @@ const to_content = (id) => {
 
 .user_card {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     border: 1px solid #ddd;
     border-radius: 5px;
     padding: 10px;
     transition: box-shadow 0.3s;
     flex-direction: column;
+    width: 100%;
+    height: 100%;
+    gap: 10px;
+}
+.user_info{
+    display: flex;
+    gap:10px;
+    width: 100%;
+    align-items: center;
+    height: 100px;
+    border-bottom: 1px solid rgba(0,0,0,0.3);
+}
+.user_avatar{
+    width: 60px;
+    height: 60px;
+    display: flex;
+    overflow: hidden;
+    border-radius: 50%;
+    border: 1px solid rgba(0,0,0,0.3);
+}
+.user_avatar img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+.user_name{
+    display: flex;
+    flex-direction: column;
+    gap:5px;
+    text-wrap: nowrap;
+    overflow: hidden;
+}
+.user_follow{
+    width: 80px;
+    height: auto;
+    padding: 7.5px 15px;
+    display: flex;
+    border: 1px solid rgba(0,0,0,0.3);
+    border-radius: 5px;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease-in-out;
+}
+.user_follow:hover{
+    opacity: 0.8;
+    cursor: pointer;
+}
+.is_follow{
+    background-color: rgba(133,133,133,1);
+    color: white;
+}
+.not_follow{
+    background-color: rgba(0,150,250,1);
+    color: white;
 }
 
 .video_card:hover {
@@ -205,9 +304,7 @@ const to_content = (id) => {
     margin-top: 10px;
 }
 
-.user_info {
-    display: flex;
-}
+
 
 .video_result {
     display: flex;
@@ -243,12 +340,48 @@ const to_content = (id) => {
     gap: 10px;
     align-items: center;
 }
-.watch_count img{
+
+.watch_count img {
     width: 15px;
     height: 15px;
     object-fit: cover;
     min-height: 0;
     background-color: rgba(255, 255, 255, 0.5);
     border-radius: 50%;
+}
+
+.user_result {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.user_video_list{
+    display: flex;
+    gap:10px;
+    height: calc(100% - 100px);
+}
+.video_list_item{
+    width: calc(100% / 3 - 10px);
+    display: flex;
+}
+.v_list_item{
+    width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.video_cover{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    border-radius: 15px;
+}
+.video_cover img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 15px;
 }
 </style>

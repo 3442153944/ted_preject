@@ -28,11 +28,14 @@ class Search(APIView):
     WHERE video_info.title LIKE %s OR video_info.tags LIKE %s
             ''',
             'search_user': '''
-           SELECT auth_user.id as user_id, auth_user.username, auth_user.introduce, 
-           auth_user.user_tags, auth_user.self_website, 
-           auth_user.avatar_path, auth_user.sex
-           from auth_user
-           where username like %s or user_tags like %s 
+                SELECT auth_user.id as user_id, auth_user.username, auth_user.introduce, 
+                auth_user.user_tags, auth_user.self_website, auth_user.avatar_path, auth_user.sex,
+                EXISTS (SELECT 1 FROM follow_table 
+                        WHERE follow_table.operation_user_id = %s AND follow_table.target_user_id = auth_user.id
+                        and follow_table.follow_status=1) 
+                        AS is_follow
+                FROM auth_user
+                WHERE auth_user.username LIKE %s OR auth_user.user_tags LIKE %s 
             ''',
             'search_user_video':
             '''
@@ -57,6 +60,7 @@ class Search(APIView):
 
             data = json.loads(request.body.decode('utf-8'))
             search_key = data.get('search_key', None)
+            user_id=request.user.id
             if search_key and search_key != '' and search_key != ' ':
                 search_key = f'%{search_key}%'
 
@@ -66,7 +70,7 @@ class Search(APIView):
                     video_data = self.format_data(cursor)
 
                     # 查询用户
-                    cursor.execute(self.sql_dict['search_user'], [search_key, search_key])
+                    cursor.execute(self.sql_dict['search_user'], [user_id,search_key, search_key])
                     user_data = self.format_data(cursor)
                     for user in user_data:
                         cursor.execute(self.sql_dict['search_user_video'], [user['user_id']])
