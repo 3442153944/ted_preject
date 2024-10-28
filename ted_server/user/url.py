@@ -5,6 +5,7 @@ from .views.edit_user_avatar import EditUserAvatar
 from .views.edit_user_info import EditUserInfo
 from .views.edit_user_password import EditUserPassword
 from .views.get_all_userinfo import GetAllUserInfo
+from .views.get_other_user_info import GetOtherUserInfo
 from .views.get_userinfo import GetUserInfo
 from .views.register import RegisterView
 from .views.update_follow import UpdateFollow
@@ -29,4 +30,6 @@ urlpatterns = [
     # 更新用户密码
     path('UpdateFollow/', UpdateFollow.as_view(), name='UpdateFollow'),
     # 更新关注状态
+    path('GetOtherUserInfo/',GetOtherUserInfo.as_view(),name='GetOtherUserInfo'),
+    # 获取其他用户信息
 ]

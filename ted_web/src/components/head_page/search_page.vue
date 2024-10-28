@@ -47,7 +47,7 @@
                                     (item.avatar_path ? item.avatar_path : '227708771630839632276') + '.png'" alt="用户头像" />
                                 </div>
                                 <div class="user_name">
-                                    <span style="cursor: pointer;">{{ item.username }}</span>
+                                    <span style="cursor: pointer;" @click="to_other_user_center(item.user_id)">{{ item.username }}</span>
                                     <span>&nbsp;{{ item.introduce }}</span>
                                     <div class="user_follow" :class="item.is_follow?'is_follow':'not_follow'" 
                                     @click="follow_user(index,item.user_id)">
@@ -136,6 +136,14 @@ const to_content = (id) => {
     emit('clear');
 };
 
+//其他用户的用户中心跳转
+const to_other_user_center=(id)=>{
+    router.push('/other_user_center');
+    store.commit('set_other_user_id',id);
+    emit('close_page');
+    emit('clear');
+}
+
 const follow_user=async (index,id)=>{
     if(user_data.value[index].is_follow==0 || user_data.value[index].is_follow==null){
         user_data.value[index].is_follow=1;
@@ -202,6 +210,7 @@ const follow_user=async (index,id)=>{
     display: flex;
     min-width: 350px;
     min-height: 250px;
+    margin-top: 10px;
 }
 
 .video_card {

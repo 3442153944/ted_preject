@@ -17,6 +17,8 @@ const store = createStore<RootState>({
         pushTimer: null,
         video_id: '',
         is_login: false,
+        other_user_id: '',
+        global_msg: '',
     },
     mutations: {
         SET_SINGLE_PAGE_STATUS(state:any, { key = '', value = false }) {
@@ -72,6 +74,12 @@ const store = createStore<RootState>({
         },
         set_login_status(state:any, is_login:any) {
             state.is_login = is_login;
+        },
+        set_other_user_id(state:any, other_user_id:any) {
+            state.other_user_id = other_user_id;
+        },
+        set_global_msg(state:any, global_msg:any) {
+            state.global_msg = global_msg;
         }
     },
     actions: {
@@ -84,7 +92,9 @@ const store = createStore<RootState>({
         index_page_show: (state:any) => state.pageStatus.index_page_show,
         register_page_show: (state:any) => state.pageStatus.register_page_show,
         video_id: (state:any) => state.video_id,
-        is_login: (state:any) => state.is_login
+        is_login: (state:any) => state.is_login,
+        other_user_id: (state:any) => state.other_user_id,
+        global_msg: (state:any) => state.global_msg,
     },
     // 添加持久化插件
     plugins: [
