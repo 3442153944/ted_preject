@@ -3,10 +3,10 @@
         <div class="content">
             <h2>主页</h2>
             <div class="item">
-                <div class="title"  v-if="top_video_info">
+                <div class="title" v-if="top_video_info">
                     <span>置顶视频</span>
                 </div>
-                <div class="video_list"  v-if="top_video_info">
+                <div class="video_list" v-if="top_video_info">
                     <div class="video_top_item">
                         <video :src="'http://localhost:8000/static/video/' + top_video_info.video_file_path"
                             preload="auto" :poster="'http://localhost:8000/static/img/img/' +
@@ -15,16 +15,16 @@
                         </video>
                         <div class="video_info">
                             <div class="video_title">
-                                <span>{{top_video_info.title}}</span>
+                                <span>{{ top_video_info.title }}</span>
                             </div>
                             <div class="play_info">
                                 <div class="play_count">
                                     <img src="http://localhost:8000/static/svg/播放.svg" alt="播放" class="icon">
-                                    <span>{{top_video_info.watch_count}}</span>
+                                    <span>{{ top_video_info.watch_count }}</span>
                                 </div>
                                 <div class="time">
                                     <img src="http://localhost:8000/static/svg/时间.svg" alt="时间" class="icon">
-                                    <span>{{format_time(top_video_info.create_time)}}</span>
+                                    <span>{{ format_time(top_video_info.create_time) }}</span>
                                 </div>
                             </div>
                         </div>
@@ -34,13 +34,57 @@
                     <span>投稿的作品</span>
                 </div>
                 <div class="video_list">
-                    <div class="video_item" v-for="(item,index) in user_info.data.user_videos" :key="index">
-                        <div v-if="index<=6">
-                            <video :src="'http://localhost:8000/static/video/' + item.video_file_path"
-                                preload="auto" :poster="'http://localhost:8000/static/img/img/' +
+                    <div class="video_item" v-for="(item, index) in user_info.data.user_videos.slice(0, 6)"
+                        :key="index">
+                        <div v-if="index <= 6" class="video_item_1">
+                            <video :src="'http://localhost:8000/static/video/' + item.video_file_path" preload="auto"
+                                :poster="'http://localhost:8000/static/img/img/' +
                                     (item.video_cover_path ?
                                         item.video_cover_path : '102718099_p0.png')" controls>
                             </video>
+                            <div class="video_info">
+                                <div class="video_title">
+                                    <span>{{ item.title }}</span>
+                                </div>
+                                <div class="play_info">
+                                    <div class="play_count">
+                                        <img src="http://localhost:8000/static/svg/播放.svg" alt="播放" class="icon">
+                                        <span>{{ item.watch_count }}</span>
+                                    </div>
+                                    <div class="time">
+                                        <img src="http://localhost:8000/static/svg/时间.svg" alt="时间" class="icon">
+                                        <span>{{ format_time(item.create_time) }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="title">
+                    <span>收藏的作品</span>
+                </div>
+                <div class="video_list">
+                    <div class="video_item" v-for="(item, index) in user_info.data.collected_videos.slice(0, 6)"
+                        :key="index">
+                        <div v-if="index <= 6" class="video_item_1">
+                            <video :src="'http://localhost:8000/static/video/' + item.video_file_path" :poster="'http://localhost:8000/static/img/img/' +
+                                (item.video_cover_path ? item.video_cover_path : '102718099_p0.png')" controls>
+                            </video>
+                            <div class="video_info">
+                                <div class="video_title">
+                                    <span>{{ item.title }}</span>
+                                </div>
+                                <div class="play_info">
+                                    <div class="play_count">
+                                        <img src="http://localhost:8000/static/svg/播放.svg" alt="播放" class="icon">
+                                        <span>{{ item.watch_count }}</span>
+                                    </div>
+                                    <div class="time">
+                                        <img src="http://localhost:8000/static/svg/时间.svg" alt="时间" class="icon">
+                                        <span>{{ format_time(item.create_time) }}</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -50,7 +94,7 @@
 </template>
 
 <script setup>
-import { ref, defineProps, onMounted, nextTick,computed } from 'vue'
+import { ref, defineProps, onMounted, nextTick, computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import get_video_info from '../js/get_video_info';
@@ -109,88 +153,111 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.icon{
+.icon {
     width: 25px;
     height: 25px;
     object-fit: cover;
 }
-.index_page{
+
+.index_page {
     width: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    gap:20px;
+    gap: 20px;
     margin-bottom: 20px;
 }
-.content{
+
+.content {
     width: 100%;
     height: auto;
     display: flex;
     flex-direction: column;
 }
-.item{
+
+.item {
     display: flex;
     flex-direction: column;
-    gap:20px;
+    gap: 20px;
     width: 100%;
 }
-.title{
+
+.title {
     font-size: 18px;
     font-weight: bold;
 }
-.video_list{
+
+.video_list {
     display: flex;
     flex-wrap: wrap;
-    gap:20px;
+    gap: 20px;
     width: 100%;
 }
-.video_top_item{
-    width:500px;
+
+.video_top_item {
+    width: 500px;
     height: 300px;
     display: flex;
     position: relative;
     flex-direction: column;
     gap: 10px;
+    cursor: pointer;
 }
-.video_top_item video{
+
+.video_top_item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 5px;
 }
-.video_item{
-    width:calc(100% / 6 - 20px);
-    height: 200px;
+
+.video_item {
+    width: calc(100% / 3 - 20px);
+    height: 300px;
     display: flex;
-    max-width: 200px;
-    max-height: 150px;
+    max-width: 500px;
+    max-height: 500px;
+    min-width: 300px;
+    min-height: 200px;
+    cursor: pointer;
 }
-.video_item video{
+
+.video_item video {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 5px;
 }
-.video_info{
+
+.video_item_1 {
     display: flex;
     flex-direction: column;
-    gap:10px;
+    gap: 5px;
 }
-.play_info{
+
+.video_info {
     display: flex;
-    gap:5px;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.play_info {
+    display: flex;
+    gap: 5px;
     justify-content: space-between;
     align-items: center;
 }
-.play_count{
+
+.play_count {
     display: flex;
     align-items: center;
     gap: 5px;
 }
-.time{
+
+.time {
     display: flex;
     align-items: center;
-    gap:5px;
+    gap: 5px;
 }
 </style>
