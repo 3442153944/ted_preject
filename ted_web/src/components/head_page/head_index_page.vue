@@ -19,13 +19,7 @@
           </div>
         </div>
         <div class="lable_item lable_item_hover">
-          <span>动态</span>
-          <div class="lable_item_dropdown">
-            <span>项目1</span>
-            <span>项目2</span>
-            <span>项目3</span>
-            <span>项目4</span>
-          </div>
+          <span @click="show_dynamic_page()">动态</span>
         </div>
         <div class="lable_item lable_item_hover">
           <span>出席</span>
@@ -98,6 +92,11 @@ function show_register_page() {
 //跳转视频上传页面
 function show_video_upload_page() {
   router.push('/upload_page')
+}
+
+//跳转动态页
+function show_dynamic_page() {
+  router.push('/dynamic_page')
 }
 
 //点击其他地方隐藏搜索框

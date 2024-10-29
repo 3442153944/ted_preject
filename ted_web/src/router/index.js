@@ -8,6 +8,7 @@ import index_page from '../components/index_page.vue'
 import user_center from '../components/user_center/user_center.vue'
 import upload_page from '../components/video_upload_page/upload_page.vue'
 import other_user_center from '../components/other_user_center/index_page.vue'
+import dynamic_page from '../components/dynamic_page/dynamic_index.vue'
 
 const routes = [
   {
@@ -41,6 +42,11 @@ const routes = [
             path:'other_user_center',
             name:'other_user_center',
             component:other_user_center//其他用户中心
+          },
+          {
+           path:'dynamic_page',
+           name:'dynamic_page',
+           component:dynamic_page//动态页面
           }
         ]
       }

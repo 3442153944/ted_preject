@@ -101,7 +101,23 @@ function createWindow() {
                     }
                 }
             ]
-        }
+        },
+        {
+            label:'返回',
+            click:()=> {
+                if (win.webContents.canGoBack()) {
+                    win.webContents.goBack();
+                }
+            }
+        },
+        {
+            label:'前进',
+            click:()=> {
+                if (win.webContents.canGoForward()) {
+                    win.webContents.goForward();
+                }
+            }
+        },
     ]);
 
     // 将自定义菜单应用到当前窗口
