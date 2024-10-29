@@ -19,7 +19,7 @@
           </div>
         </div>
         <div class="lable_item lable_item_hover">
-          <span>发现</span>
+          <span>动态</span>
           <div class="lable_item_dropdown">
             <span>项目1</span>
             <span>项目2</span>

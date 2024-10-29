@@ -34,7 +34,9 @@
                             :src="'http://localhost:8000/static/video/'+recommend_video_list[0].video_file_path"
                              preload="auto" ref="videoElement"
                             :muted="isMuted"
-                                @mouseenter="playVideo" @mouseleave="pauseVideo" @timeupdate="updateTime">
+                                @mouseenter="playVideo" @mouseleave="pauseVideo" @timeupdate="updateTime" 
+                                :poster="'http://localhost:8000/static/img/img/' + recommend_video_list[0].video_cover_path"
+                                >
                             </video>
                             <div class="remaining_time">
                                 剩余时间: {{ remainingTime }} 秒

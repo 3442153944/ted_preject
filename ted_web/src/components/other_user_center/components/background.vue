@@ -118,6 +118,7 @@ const change_follow_status = async () => {
 .user_box{
     display: flex;
     gap: 10px;
+    margin-left: 10px;
 }
 .user_avatar{
     width: 100px;

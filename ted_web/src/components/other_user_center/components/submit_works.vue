@@ -4,21 +4,21 @@
             <h2>投稿视频</h2>
             <div class="choose_short">
                 <div class="short_fun">
-                    <span>排序方式</span>
-                    <span @click="sortBy('time')">按时间排序</span>
-                    <span @click="sortBy('views')">按播放量排序</span>
+                    <span style="background-color: rgba(133,133,133,1);color:white;padding:5px 10px;border-radius:5px;">排序方式</span>
+                    <span style="cursor: pointer;" @click="sortBy('time')" >按时间排序</span>
+                    <span @click="sortBy('views')" style="cursor: pointer;">按播放量排序</span>
                 </div>
                 <div class="short_upload">
-                    <span>排序顺序</span>
-                    <span @click="changeOrder('asc')">升序排序</span>
-                    <span @click="changeOrder('desc')">降序排序</span>
+                    <span style="background-color: rgba(133,133,133,1);color:white;padding:5px 10px;border-radius:5px;">排序顺序</span>
+                    <span @click="changeOrder('asc')" style="cursor: pointer;">升序排序</span>
+                    <span @click="changeOrder('desc')" style="cursor: pointer;">降序排序</span>
                 </div>
             </div>
             <div class="submit_works_list">
                 <div class="item" v-for="(item, index) in sortedVideos" :key="index">
                     <video :src="'http://localhost:8000/static/video/' + item.video_file_path"
                         :poster="'http://localhost:8000/static/img/img/' + (item.video_cover_path ? item.video_cover_path : '102718099_p0.png')" 
-                        controls>
+                        @click="to_video_content(item.id)">
                     </video>
                     <div class="video_info">
                         <div class="video_title">
@@ -105,6 +105,13 @@ function sortBy(key) {
 function changeOrder(order) {
     sortOrder.value = order;
 }
+
+//视频内容页跳转
+const to_video_content = (id) => {
+    router.push('content_page')
+    store.commit('set_video_id', id)
+}
+
 </script>
 
 <style scoped>
@@ -118,13 +125,30 @@ function changeOrder(order) {
     display: flex;
     gap:10px;
 }
+.choose_short span{
+    padding: 5px 10px;
+    background-color: rgba(0,150,250,1);
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+}
+.choose_short span:hover{
+    opacity: 0.8;
+    transition: all 0.2s ease-in-out;
+    transform: scale(1.03);
+    transform: translateY(-2px);
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+}
 .short_fun{
     display: flex;
     gap:10px;
+    align-items: center;
 }
 .short_upload{
     display: flex;
     gap:10px;
+    align-items: center;
 }
 .item {
     width: calc(100% / 4 - 20px);

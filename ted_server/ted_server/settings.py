@@ -45,15 +45,19 @@ TEMPLATES = [
     },
 ]
 
-#跨域允许列表
+# 跨域允许列表
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:10000",  # 添加这个地址
     "http://127.0.0.1:10000",  # 或者这个
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
 ]
-#跨域允许列表
+# 跨域允许列表
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:10000",
-    "http://127.0.0.1:10000"
+    "http://127.0.0.1:10000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173"
 ]
 
 # CORS settings

@@ -11,7 +11,8 @@
                         <video :src="'http://localhost:8000/static/video/' + top_video_info.video_file_path"
                             preload="auto" :poster="'http://localhost:8000/static/img/img/' +
                                 (top_video_info.video_cover_path ?
-                                    top_video_info.video_cover_path : '102718099_p0.png')" ref="top_video" controls>
+                                    top_video_info.video_cover_path : '102718099_p0.png')" ref="top_video" 
+                                    @click="to_video_content(top_video_info.id)" >
                         </video>
                         <div class="video_info">
                             <div class="video_title">
@@ -40,7 +41,7 @@
                             <video :src="'http://localhost:8000/static/video/' + item.video_file_path" preload="auto"
                                 :poster="'http://localhost:8000/static/img/img/' +
                                     (item.video_cover_path ?
-                                        item.video_cover_path : '102718099_p0.png')" controls>
+                                        item.video_cover_path : '102718099_p0.png')" @click="to_video_content(item.id)" >
                             </video>
                             <div class="video_info">
                                 <div class="video_title">
@@ -68,7 +69,8 @@
                         :key="index">
                         <div v-if="index <= 6" class="video_item_1">
                             <video :src="'http://localhost:8000/static/video/' + item.video_file_path" :poster="'http://localhost:8000/static/img/img/' +
-                                (item.video_cover_path ? item.video_cover_path : '102718099_p0.png')" controls>
+                                (item.video_cover_path ? item.video_cover_path : '102718099_p0.png')" 
+                                @click="to_video_content(item.id)">
                             </video>
                             <div class="video_info">
                                 <div class="video_title">
@@ -141,7 +143,11 @@ function format_time(time) {
     return `${year}年${month}月${day}日 ${hour}时${minute}分`;
 }
 
-
+//视频内容页跳转
+const to_video_content = (id) => {
+    router.push('content_page')
+    store.commit('set_video_id', id)
+}
 
 onMounted(async () => {
     await nextTick()
