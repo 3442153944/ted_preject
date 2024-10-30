@@ -32,7 +32,13 @@ class GetDynamicList(APIView):
         try:
             data = json.loads(request.body.decode('utf-8'))
             user_id = data.get('user_id')
+            if user_id is None:
+                user_id = request.user.id
             request_type = data.get('request_type')
+            self_limit = data.get('self_limit',10)
+            self_offset = data.get('self_offset',0)
+            other_limit = data.get('other_limit',10)
+            other_offset = data.get('other_offset',0)
 
             if not user_id:
                 return JsonResponse({'status': 400, 'msg': '缺少参数'}, status=400)
@@ -43,8 +49,8 @@ class GetDynamicList(APIView):
             with connection.cursor() as cursor:
                 follow_list = self.get_follow_list(cursor, user_id) if request_type == 'self' else []
                 follow_user_dynamic_list = self.get_dynamic_list_for_followers(cursor,
-                                        follow_list) if request_type == 'self' else []
-                self_dynamic_list = self.get_dynamic_list(cursor, user_id)
+                                        follow_list,other_limit,other_offset) if request_type == 'self' else []
+                self_dynamic_list = self.get_dynamic_list(cursor, user_id,self_limit,self_offset)
 
                 return JsonResponse({
                     'status': 200,
@@ -64,20 +70,29 @@ class GetDynamicList(APIView):
         cursor.execute(sql, [user_id])
         return format_result(cursor)
 
-    def get_dynamic_list_for_followers(self, cursor, follow_list):
+    def get_dynamic_list_for_followers(self, cursor, follow_list, limit=10, offset=0):
         follow_user_dynamic_list = []
-        sql = 'SELECT * FROM dynamic_table WHERE send_user_id=%s AND dynamic_status=1'
+        sql = ('SELECT dynamic_table.title, dynamic_table.content, dynamic_table.send_user_id, dynamic_table.send_time,'
+               ' dynamic_table.dynamic_status, dynamic_table.img_list,auth_user.id as user_id,'
+               'auth_user.username,auth_user.avatar_path '
+               'FROM dynamic_table left join auth_user on auth_user.id=dynamic_table.send_user_id'
+               ' WHERE send_user_id=%s AND dynamic_status=1')
 
         for follow_user in follow_list:
             cursor.execute(sql, [follow_user['target_user_id']])
             follow_user_dynamic_list.extend(format_result(cursor))
 
-        follow_user_dynamic_list.sort(key=lambda x: x['send_time'])
-        return follow_user_dynamic_list
+        # 合并后排序
+        follow_user_dynamic_list.sort(key=lambda x: x['send_time'], reverse=True)
 
-    def get_dynamic_list(self, cursor, user_id):
-        sql = 'SELECT * FROM dynamic_table WHERE send_user_id=%s AND dynamic_status=1'
-        cursor.execute(sql, [user_id])
+        # 应用分页
+        paginated_list = follow_user_dynamic_list[offset:offset + limit]
+
+        return paginated_list
+
+    def get_dynamic_list(self, cursor, user_id,limit=10,offset=0):
+        sql = 'SELECT * FROM dynamic_table WHERE send_user_id=%s AND dynamic_status=1 limit %s offset %s'
+        cursor.execute(sql, [user_id,limit,offset])
         result = format_result(cursor)
         result.sort(key=lambda x: x['send_time'])
         return result

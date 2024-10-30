@@ -1,5 +1,6 @@
 from django.urls import path
 
+from .views.add_dynamic import AddDynamic
 from .views.edit_base_userinfo import EditBaseUserInfo
 from .views.edit_user_avatar import EditUserAvatar
 from .views.edit_user_info import EditUserInfo
@@ -31,8 +32,10 @@ urlpatterns = [
     # 更新用户密码
     path('UpdateFollow/', UpdateFollow.as_view(), name='UpdateFollow'),
     # 更新关注状态
-    path('GetOtherUserInfo/',GetOtherUserInfo.as_view(),name='GetOtherUserInfo'),
+    path('GetOtherUserInfo/', GetOtherUserInfo.as_view(), name='GetOtherUserInfo'),
     # 获取其他用户信息
-    path('GetDynamicList/',GetDynamicList.as_view(),name='GetDynamicList'),
+    path('GetDynamicList/', GetDynamicList.as_view(), name='GetDynamicList'),
     # 获取指定用户的动态列表或者自身关注的用户的动态列表
+    path('AddDynamic/', AddDynamic.as_view(), name='AddDynamic'),
+    # 添加动态
 ]

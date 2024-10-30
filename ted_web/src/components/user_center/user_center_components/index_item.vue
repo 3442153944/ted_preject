@@ -2,7 +2,7 @@
     <div class="index_item">
         <div class="content">
             <div class="top_video" v-if="video_info">
-                <div class="video_box">
+                <div class="video_box" v-if="video_info.video_file_path">
                     <video :src="'http://localhost:8000/static/video/' + video_info.video_file_path"
                         :poster="'http://localhost:8000/static/img/img/' + video_info.video_cover_path"
                         ref="video_file"></video>
@@ -10,7 +10,7 @@
                         <span>{{ video_long_time }}</span>
                     </div>
                 </div>
-                <div class="video_info">
+                <div class="video_info" v-if="video_info.video_file_path">
                     <div>{{ video_info.title }}</div>
                     <div class="play_info">
                         <span>

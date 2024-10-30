@@ -2,7 +2,7 @@
     <div class="input_index">
         <div class="content">
             <div class="title_box">
-                <textarea placeholder="请输入标题"></textarea>
+                <textarea placeholder="请输入标题" v-model="title"></textarea>
             </div>
             <div ref="input_box" class="input_box" contenteditable="true"></div>
             <div class="input_img_box" ref="input_img_box" v-if="img_file_list.length > 0 || status_index == 1">
@@ -35,7 +35,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="send_btn">
+                <div class="send_btn" @click="add_dynamic_1() ">
                     <span>发布</span>
                 </div>
             </div>
@@ -46,14 +46,20 @@
 <script setup>
 import { ref } from 'vue';
 import emoji_box from './emoji_box/emoji_box.vue';
+import add_dynamic from './js/add_dynamic';
+import { useStore } from 'vuex';
+
+const store = useStore();
 
 let ip = 'http://localhost:8000/static/';
 let input_box = ref(null);
 let status_index = ref(-1);
 let input_img_box = ref(null);
+let title = ref('');
 
 //图像文件列表
 let img_file_list = ref([]);
+let back_img_file_list=[]
 
 // 切换状态索引
 function set_status_index(index) {
@@ -68,6 +74,7 @@ function add_img_input_click() {
 // 向栈中压入解析为Base64的图像文件
 function push_img_file(event) {
     const file = event.target.files[0];
+    back_img_file_list.push(file)
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -92,6 +99,7 @@ function add_content_emoji(emoji) {
         img.style.height = '16px';
         img.style.objectFit = 'cover';
         img.style.display = 'inline-block';
+        img.alt= emoji;
 
         // 插入 img 元素
         input_box.value.appendChild(img);
@@ -111,6 +119,23 @@ function placeCaretAtEnd(el) {
     sel.removeAllRanges();
     sel.addRange(range);
 }
+
+//新增动态
+async function add_dynamic_1() {
+    console.log('新增动态');
+    //获取input_box中的完整原始HTML
+    let html = input_box.value.innerHTML;
+    console.log(html);
+    let result=await add_dynamic(back_img_file_list,title.value,html)
+    console.log(result);
+    if(result.status==200){
+        store.commit('set_global_msg','新增动态消息成功')
+    }
+    else{
+        store.commit('set_global_msg','新增动态消息失败，请稍后重试',data.msg)
+    }
+}
+
 </script>
 
 <style scoped>
@@ -241,7 +266,7 @@ function placeCaretAtEnd(el) {
     border-radius: 10px;
     padding: 10px;
     box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
-    max-width: calc(100vw - 40px);
+    max-width: calc(100% - 20px);
     transition: all 0.3s;
 }
 
