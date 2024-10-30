@@ -93,6 +93,7 @@ function set_emoji_title(title) {
     padding: 5px;
     border: 1px solid rgba(133, 133, 133, 0.8);
     background-color: rgba(255,255,255,1);
+    z-index: 10;
 }
 .content{
     width: 100%;

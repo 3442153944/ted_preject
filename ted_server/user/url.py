@@ -5,6 +5,7 @@ from .views.edit_user_avatar import EditUserAvatar
 from .views.edit_user_info import EditUserInfo
 from .views.edit_user_password import EditUserPassword
 from .views.get_all_userinfo import GetAllUserInfo
+from .views.get_dynamic_list import GetDynamicList
 from .views.get_other_user_info import GetOtherUserInfo
 from .views.get_userinfo import GetUserInfo
 from .views.register import RegisterView
@@ -32,4 +33,6 @@ urlpatterns = [
     # 更新关注状态
     path('GetOtherUserInfo/',GetOtherUserInfo.as_view(),name='GetOtherUserInfo'),
     # 获取其他用户信息
+    path('GetDynamicList/',GetDynamicList.as_view(),name='GetDynamicList'),
+    # 获取指定用户的动态列表或者自身关注的用户的动态列表
 ]
