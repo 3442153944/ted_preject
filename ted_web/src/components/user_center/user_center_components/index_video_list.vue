@@ -5,7 +5,7 @@
         <div class="video_list">
             <div class="video_item" v-for="(item,index) in video_list" :key="index">
                 <div class="item">
-                    <div class="video_cover">
+                    <div class="video_cover" @click="to_content_page(item.id)">
                         <video 
                         :src="'http://localhost:8000/static/video/'+item.video_file_path"
                         :poster="'http://localhost:8000/static/img/img/'+item.video_cover_path"></video>
@@ -31,6 +31,11 @@
 
 <script setup>
 import { onMounted, ref ,defineProps,computed} from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
+const store = useStore();
+const router = useRouter();
 
 const props = defineProps({
     video_list: Array
@@ -42,6 +47,12 @@ let video_list = ref([]);
 let format_time=(tiem)=>{
     let time = new Date(tiem);
     return time.toLocaleDateString();
+}
+
+//视频跳转
+function to_content_page(id){
+    router.push('/content_page')
+    store.commit('set_video_id',id)
 }
 
 onMounted(()=>{

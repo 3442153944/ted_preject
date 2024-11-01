@@ -31,10 +31,10 @@
                         </div>
                     </div>
                 </div>
-                <div class="title">
+                <div class="title" v-if="user_info.data.user_videos.length > 0">
                     <span>投稿的作品</span>
                 </div>
-                <div class="video_list">
+                <div class="video_list" v-if="user_info.data.user_videos.length > 0">
                     <div class="video_item" v-for="(item, index) in user_info.data.user_videos.slice(0, 6)"
                         :key="index">
                         <div v-if="index <= 6" class="video_item_1">
@@ -61,10 +61,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="title">
+                <div v-else>
+                    <span>用户没有投稿的视频</span>
+                </div>
+                <div class="title" v-if="user_info.data.collected_videos.length > 0">
                     <span>收藏的作品</span>
                 </div>
-                <div class="video_list">
+                <div class="video_list" v-if="user_info.data.collected_videos.length > 0">
                     <div class="video_item" v-for="(item, index) in user_info.data.collected_videos.slice(0, 6)"
                         :key="index">
                         <div v-if="index <= 6" class="video_item_1">
@@ -89,6 +92,9 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div v-else>
+                    <span>用户没有收藏的视频</span>
                 </div>
             </div>
         </div>

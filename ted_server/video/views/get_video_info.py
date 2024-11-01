@@ -53,9 +53,15 @@ class GetVideoInfo(APIView):
                     cursor.execute(is_collect_sql,[video_id,user_id])
                     is_collect=cursor.fetchone()
                     row_dict['is_collect']=bool(is_collect)
+                    is_follow_sql='''
+                    select * from follow_table where follow_status=1 and target_user_id=%s and operation_user_id=%s
+                    '''
+                    cursor.execute(is_follow_sql,[row_dict['author_id'],user_id])
+                    is_follow=cursor.fetchone()
+                    row_dict['is_follow']=bool(is_follow)
                     return JsonResponse({'status':200,'msg':'获取成功','data':row_dict},status=200)
             else:
-                return JsonResponse({'status':400,'msg':'参数错误'},status=400)
+                return JsonResponse({'status':200,'msg':'用户没有发布视频'},status=200)
 
         except Exception as e:
             logger.error(e)

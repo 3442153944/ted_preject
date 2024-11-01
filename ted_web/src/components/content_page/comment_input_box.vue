@@ -12,6 +12,7 @@
 import { ref, defineProps, defineEmits, watch } from 'vue';
 import auto_textarea from './auto_textarea.vue';
 import { add_comment } from './js/add_comment';
+import { useStore } from 'vuex';
 
 // 定义 props 和 emits
 let props = defineProps({
@@ -33,7 +34,7 @@ let props = defineProps({
     }
 });
 
-let emit = defineEmits(['update:modelValue','send_comment','temp_comment','temp_reply_comment']);
+let emit = defineEmits(['update:modelValue','send_comment','temp_comment','temp_reply_comment','comment']);
 let user=localStorage.getItem('user');
 let date=new Date();
 //返回的临时评论
@@ -74,6 +75,7 @@ async function sendComment() {
         console.log('视频ID:', props.video_id);
         console.log('发送评论:', text.value);
         let res = await add_comment(props.comment_id, text.value, props.comment_type, props.video_id);
+        emit('comment',text.value);
         if (res.status === 200) {
             const newComment = {
                 comment_id: '0', // 假设为临时评论的 ID

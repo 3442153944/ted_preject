@@ -27,8 +27,8 @@ onMounted(async () => {
   let login_status = await verify_token(token);
   if (!login_status) {
     alert('登录已过期，请重新登录');
-    router.push('/login');
-    store.commit('set_login_status',false)
+    //router.push('/login');
+    //store.commit('set_login_status',false)
     return;
   }
 

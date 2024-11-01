@@ -66,6 +66,10 @@ class GetComment(APIView):
                     # 获取评论总数
                     cursor.execute('SELECT COUNT(*) FROM comment_table WHERE video_id = %s', [video_id])
                     total = cursor.fetchone()[0]
+                    user_id = request.user.id
+                    is_follow_sql='''
+                    select * from follow_table where follow_status=1 and operation_user_id=%s and target_user_id=%s
+                    '''
 
                     # 删除不需要的字段
                     rows = {'rows': rows, 'total': total}
@@ -73,6 +77,10 @@ class GetComment(APIView):
                         row.pop('id', None)
                         row.pop('password', None)
                         row.pop('email', None)
+                        cursor.execute(is_follow_sql,[user_id,row['user_id']])
+                        result=cursor.fetchone()
+                        row['is_follow']=bool(result)
+
 
                     return JsonResponse({'status': 200, 'msg': '获取评论成功', 'data': rows}, status=200)
 

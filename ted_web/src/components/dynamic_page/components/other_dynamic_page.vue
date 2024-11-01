@@ -6,7 +6,7 @@
                 <div class="item" v-for="(item, index) in other_dynamic_list" :key="index">
                     <div class="user_box">
                         <img :src="'http://localhost:8000/static/img/thumbnail/'+item.avatar_path+'.png'">
-                        <span>{{item.username}}</span>
+                        <span @click="to_other_user_center(item.send_user_id)">{{item.username}}</span>
                     </div>
                     <div class="title">
                         <span>{{ item.title }}</span>
@@ -28,6 +28,11 @@
 <script setup>
 import { ref, defineProps,watch,defineEmits } from 'vue'
 import preview_box from './preview_box.vue';
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router';
+
+const store = useStore()
+const router = useRouter()
 
 let ip = "http://localhost:8000/static/"
 const props = defineProps({
@@ -59,6 +64,12 @@ function format_content_to_html(content) {
     });
 }
 
+//其他用户的用户中心跳转
+const to_other_user_center=(id)=>{
+    console.log(id);
+    router.push('/other_user_center');
+    store.commit('set_other_user_id',id);
+}
 
 </script>
 

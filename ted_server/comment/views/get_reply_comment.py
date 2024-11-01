@@ -71,8 +71,15 @@ class GetReplyComment(APIView):
                     rows = [dict(zip(columns, row)) for row in result]
 
                     # 获取子评论的总数
-                    cursor.execute('SELECT COUNT(*) FROM comment_reply_table WHERE belong_to_video_id = %s AND reply_comment_id = %s', [video_id, reply_comment_id])
+                    cursor.execute(
+                        'SELECT COUNT(*) FROM comment_reply_table WHERE belong_to_video_id = %s AND reply_comment_id = %s',
+                        [video_id, reply_comment_id])
                     total = cursor.fetchone()[0]
+
+                    user_id = request.user.id
+                    is_follow_sql = '''
+                    select * from follow_table where follow_status=1 and operation_user_id=%s and target_user_id=%s
+                                        '''
 
                     # 删除不需要的字段
                     rows = {'rows': rows, 'total': total}
@@ -80,6 +87,8 @@ class GetReplyComment(APIView):
                         row.pop('id', None)
                         row.pop('password', None)
                         row.pop('email', None)
+                        cursor.execute(is_follow_sql, [user_id, row['user_id']])
+                        row['is_follow'] = bool(cursor.fetchone())
 
                     return JsonResponse({'status': 200, 'msg': '获取评论成功', 'data': rows}, status=200)
             else:

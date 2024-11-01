@@ -10,9 +10,9 @@
                         <span>{{ video_long_time }}</span>
                     </div>
                 </div>
-                <div class="video_info" v-if="video_info.video_file_path">
+                <div class="video_info" >
                     <div>{{ video_info.title }}</div>
-                    <div class="play_info">
+                    <div class="play_info" v-if="video_info.video_file_path">
                         <span>
                             <img src="http://localhost:8000/static/svg/播放.svg" alt="player" class="icon">
                             {{ video_info.watch_count }}
@@ -24,7 +24,7 @@
                     <div class="edit_top_video">
                         <span class="edit_top_ed"
                             @click="float_video_list_box_show = !float_video_list_box_show">编辑置顶</span>
-                        <span class="edit_top_ca" @click="del_top">取消置顶</span>
+                        <span class="edit_top_ca" @click="del_top" v-if="video_info.video_file_path" >取消置顶</span>
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
             </div>
             <div class="float_video_list_box" v-if="float_video_list_box_show">
                 <user_video_list :video_list="props.user_info.data.user_videos"
-                    @close_page="float_video_list_box_show = false"></user_video_list>
+                    @close_page="float_video_list_box_show = false" @page_reload="reload()"></user_video_list>
             </div>
         </div>
     </div>
@@ -88,6 +88,14 @@ let user_info = ref({})
 async function del_top() {
     let res = await update_top_video(null, 'del')
     console.log(res)
+    store.commit('set_global_msg',res.status?'取消置顶成功':`失败${res.msg}`)
+    setTimeout(function () {
+        window.location.reload()
+    },1000)
+}
+
+function reload() {
+    window.location.reload()
 }
 
 onMounted(async function () {

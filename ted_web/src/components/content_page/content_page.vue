@@ -52,7 +52,7 @@
                     <div class="send_user_avatar">
                         <img :src="'http://localhost:8000/static/img/thumbnail/'+user_info.avatar_path+'.png'">
                     </div>
-                    <comment_input_box :video_id="video_id" :comment_type="'comment'" />
+                    <comment_input_box :video_id="video_id" :comment_type="'comment'" @comment="get_main_comment($event)"/>
                 </div>
                 <comment_box></comment_box>
                 <div class="the_end_page_box">
@@ -86,6 +86,15 @@ console.log(video_id.value)
 let user_info=ref(JSON.parse(localStorage.getItem('user')))
 console.log(user_info.value)
 let main_video_info=ref({})
+
+let comment=ref()
+
+//获取主评论
+function get_main_comment(e){
+    comment.value=e
+    //向全局消息发送主评论内容
+    store.commit('set_comment_msg',comment.value)
+}
 
 // 主视频的播放路径
 const video_path = ref('src/assets/video/v1.mp4')

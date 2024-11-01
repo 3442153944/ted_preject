@@ -8,6 +8,7 @@ from ..log.log import Logger
 from .re_write_img import ReWriteImg
 from .append_file import AppendFile
 from django.db import connection,transaction,DatabaseError
+import uuid
 
 re_write_img = ReWriteImg()
 logger = Logger()
@@ -130,7 +131,7 @@ class UploadVideo(APIView):
 
     def generate_unique_filename(self, path):
         while True:
-            filename = ''.join([str(i) for i in os.urandom(21)])
+            filename = str(uuid.uuid4())
             if not os.path.exists(os.path.join(path, filename + '.mp4')) and not os.path.exists(
                     os.path.join(path, filename + '.png')):
                 return filename
