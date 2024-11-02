@@ -26,9 +26,9 @@ onMounted(async () => {
   let refresh_token_a = localStorage.getItem('refresh_token');
   let login_status = await verify_token(token);
   if (!login_status) {
-    alert('登录已过期，请重新登录');
+    alert('请先登录');
     //router.push('/login');
-    //store.commit('set_login_status',false)
+    store.commit('set_login_status',false)
     return;
   }
 
@@ -39,7 +39,7 @@ onMounted(async () => {
     store.commit('set_login_status',true)
   } else {
     alert('Token refresh failed, please login again.');
-    router.push('/login');
+    //router.push('/login');
     store.commit('set_login_status',false)
   }
 

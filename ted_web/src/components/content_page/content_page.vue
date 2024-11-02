@@ -6,7 +6,7 @@
                     <!-- 主视频播放器 -->
                     <video class="main-video" controls 
                     :src="'http://localhost:8000/static/video/'+main_video_info.video_file_path" 
-                    @timeupdate="updateMainVideoTime"></video>
+                    @timeupdate="updateMainVideoTime" preload="auto"></video>
                     <div class="info_item">
                         <div class="main_video_tite">
                             {{main_video_info.title}}

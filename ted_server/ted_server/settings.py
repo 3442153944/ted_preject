@@ -25,7 +25,7 @@ DATABASES = {
             'charset': 'utf8mb4',
         },
         'CONN_MAX_AGE': 600,
-        'ATOMIC_REQUESTS': True,
+        'ATOMIC_REQUESTS': False,
     }
 }
 
@@ -71,8 +71,8 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "comment.apps.CommentConfig",
     "video.apps.VideoConfig",
-    "search.apps.SearchConfig"  # Enable CORS support
-    #'channels',  #websoket支持
+    "search.apps.SearchConfig",  # Enable CORS support
+    'channels',  # websocket支持
 ]
 
 MIDDLEWARE = [
@@ -116,15 +116,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # 将静态文件存放在项目的 static 文件夹中
 ]
-#配置websoket
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}
+
+ASGI_APPLICATION='ted_server.asgi.application'
 
 # 禁用 CSRF Cookie
 CSRF_COOKIE_HTTPONLY = False  # CSRF 不再依赖 cookies，禁用该选项

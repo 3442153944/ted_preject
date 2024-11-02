@@ -11,7 +11,8 @@
                         <!-- 推荐视频播放器 -->
                         <video ref="recommendRefs" class="recommend-video" 
                         :src="'http://localhost:8000/static/video/'+video.video_file_path" muted
-                            @timeupdate="updateRecommendTime(index)"></video>
+                            @timeupdate="updateRecommendTime(index)" preload="auto" 
+                            :poster="'http://localhost:8000/static/img/img/'+video.video_cover_path"></video>
                         <div class="time">
                             <span>{{ remainingTimes[index] }} 秒</span>
                         </div>

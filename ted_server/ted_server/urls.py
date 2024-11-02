@@ -8,6 +8,8 @@ from rest_framework_simplejwt.views import (
 )
 from django.conf import settings
 from django.conf.urls.static import static
+
+from ted_server.routing import websocket_urlpatterns
 from .get_csrf_token import CSRFTokenView
 from .views import CustomTokenObtainPairView
 
@@ -27,5 +29,7 @@ urlpatterns = [
                   path('api/video/', include('video.url'), name='video'),
                   #视频模块接口
                   path('api/search/',include('search.url'),name='search'),
-                  #搜索模块接口
+                  #搜索模块接口,
+                  #path('ws/', include(websocket_urlpatterns)),
+                  # websocket,Django的websocket支持就是一坨，使用Tornado的websocket实现
               ] + static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'static')

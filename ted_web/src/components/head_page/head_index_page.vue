@@ -22,16 +22,10 @@
           <span @click="show_dynamic_page()">动态</span>
         </div>
         <div class="lable_item lable_item_hover">
-          <span>出席</span>
-          <div class="lable_item_dropdown">
-            <span>项目1</span>
-            <span>项目2</span>
-            <span>项目3</span>
-            <span>项目4</span>
-          </div>
+          <span @click="show_history_page()">历史</span>
         </div>
         <div class="lable_item lable_item_hover">
-          <span>参与</span>
+          <span>消息</span>
           <div class="lable_item_dropdown">
             <span>项目1</span>
             <span>项目2</span>
@@ -97,6 +91,11 @@ function show_video_upload_page() {
 //跳转动态页
 function show_dynamic_page() {
   router.push('/dynamic_page')
+}
+
+//跳转历史浏览
+function show_history_page() {
+  router.push('/history_page')
 }
 
 //点击其他地方隐藏搜索框

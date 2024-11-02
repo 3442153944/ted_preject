@@ -116,6 +116,9 @@ async function upload_video(
             const data = await response.json();
             console.log('分片上传响应:', data);
             current_chunk++;
+            if(data.all_success){
+                return data;
+            }
         }
     } else {
         return '封面上传失败';

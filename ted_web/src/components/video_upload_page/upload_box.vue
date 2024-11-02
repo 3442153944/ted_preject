@@ -99,6 +99,9 @@ import get_video_cover from './js/get_video_cover';
 import progress_bar from './progress_bar.vue';
 import  upload_video  from './js/upload_video';
 import {back_upload_progress} from './js/upload_video'
+import { useStore } from 'vuex';
+
+const store = useStore();
 
 let upload_file = ref(null);
 let upload_cover_file = ref();
@@ -244,6 +247,12 @@ const submit_video = async () => {
         console.log('封面图像字节流：', cover_file);
         let res=await upload_video(video_file.value,cover_file,video_data,handleUploadProgress);
         console.log('上传视频结果：', res);
+        if(res.all_success){
+            store.commit('set_global_msg','视频上传成功')
+        }
+        else{
+            store.commit('set_global_msg',res.msg)
+        }
     }else{
         console.warn('获取封面图像字节流失败');
     }
