@@ -3,12 +3,14 @@ from django.urls import path
 from .views.add_dynamic import AddDynamic
 from .views.edit_base_userinfo import EditBaseUserInfo
 from .views.edit_user_avatar import EditUserAvatar
+from .views.edit_user_collect import EditUserCollect
 from .views.edit_user_info import EditUserInfo
 from .views.edit_user_password import EditUserPassword
 from .views.get_all_userinfo import GetAllUserInfo
 from .views.get_dynamic_list import GetDynamicList
 from .views.get_other_user_info import GetOtherUserInfo
 from .views.get_userinfo import GetUserInfo
+from .views.get_watch_list import GetWatchList
 from .views.register import RegisterView
 from .views.update_follow import UpdateFollow
 from .views.update_top_video import UpdateTopVideo
@@ -38,4 +40,8 @@ urlpatterns = [
     # 获取指定用户的动态列表或者自身关注的用户的动态列表
     path('AddDynamic/', AddDynamic.as_view(), name='AddDynamic'),
     # 添加动态
+    path('EditUserCollect/',EditUserCollect.as_view(),name='EditUserCollect'),
+    # 编辑用户收藏
+    path('GetWatchList/',GetWatchList.as_view(),name='GetWatchList'),
+    # 获取用户观看历史列表
 ]

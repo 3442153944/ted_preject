@@ -133,6 +133,7 @@ function to_content_page(id){
   display: flex;
   flex-wrap: wrap;
   gap: 30px;
+  margin-bottom: 20px;
 }
 
 .item {
