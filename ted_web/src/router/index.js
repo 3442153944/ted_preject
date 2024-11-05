@@ -10,6 +10,7 @@ import upload_page from '../components/video_upload_page/upload_page.vue'
 import other_user_center from '../components/other_user_center/index_page.vue'
 import dynamic_page from '../components/dynamic_page/dynamic_index.vue'
 import history_page from '../components/head_page/history_page.vue'
+import admin_index from '../components/admin_control/admin_index.vue'
 
 const routes = [
   {
@@ -67,6 +68,10 @@ const routes = [
     path: '/register',
     name: 'register',
     component: register//注册页面
+  },{
+    path: '/admin',
+    name: 'admin',
+    component: admin_index//管理员页面
   }
 ]
 

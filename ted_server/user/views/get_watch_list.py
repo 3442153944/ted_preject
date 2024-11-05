@@ -35,6 +35,9 @@ class GetWatchList(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'status': 403, 'msg': '未登录'}, status=403)
 
+        limit = request.POST.get('limit', 10)
+        offset = request.POST.get('offset', 0)
+
         user_id = request.user.id
         try:
             with transaction.atomic():
@@ -58,9 +61,10 @@ class GetWatchList(APIView):
                     LEFT JOIN 
                         video_info ON video_info.id = watch_table.video_id
                     WHERE 
-                        watch_table.user_id = %s
+                        watch_table.user_id = %s 
+                    limit %s offset %s
                     '''
-                    cursor.execute(watch_history_sql, [user_id])
+                    cursor.execute(watch_history_sql, [user_id, limit, offset])
                     watch_history = format_result(cursor)
 
                     # 获取所有相关作者信息
@@ -78,7 +82,16 @@ class GetWatchList(APIView):
                         for record in watch_history:
                             record['author_info'] = authors_info.get(record['author_id'], {})
 
-                return JsonResponse({'status': 200, 'msg': '获取成功', 'data': watch_history})
+                    #统计观看历史总数
+                    watch_history_count_sql = '''
+                    SELECT COUNT(*)
+                    FROM watch_table
+                    WHERE user_id = %s
+                    '''
+                    cursor.execute(watch_history_count_sql, [user_id])
+                    total=cursor.fetchone()[0]
+
+                return JsonResponse({'status': 200, 'msg': '获取成功', 'data': watch_history,'total':total},status=200)
 
         except Exception as e:
             print(e)

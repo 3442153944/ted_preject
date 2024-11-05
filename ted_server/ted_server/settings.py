@@ -72,7 +72,8 @@ INSTALLED_APPS = [
     "comment.apps.CommentConfig",
     "video.apps.VideoConfig",
     "search.apps.SearchConfig",  # Enable CORS support
-    'channels',  # websocket支持
+    'channels',
+    "admin_control.apps.AdminControlConfig"  # websocket支持
 ]
 
 MIDDLEWARE = [

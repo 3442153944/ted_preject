@@ -23,41 +23,71 @@ class RecommendVideo(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
-            data = json.loads(request.body.decode('utf-8'))
+            user_id = request.user.id if request.user.is_authenticated else None
+
             with connection.cursor() as cursor:
-                sql = '''select * ,video_info.id as 'video_id'  
-                from video_info left join auth_user on auth_user.id=video_info.author_id'''
-                cursor.execute(sql)
+                # 如果用户已登录，获取用户观看过的视频标签
+                if user_id:
+                    get_watch_list = '''
+                    SELECT video_info.tags 
+                    FROM watch_table 
+                    LEFT JOIN video_info ON video_info.id = watch_table.video_id
+                    WHERE watch_table.user_id = %s
+                    '''
+                    cursor.execute(get_watch_list, [user_id])
+                    watched_tags = cursor.fetchall()
+
+                    # 统计标签出现次数
+                    tags_count = {}
+                    for row in watched_tags:
+                        tags = row[0].split(',') if row[0] else []
+                        for tag in tags:
+                            if tag in tags_count:
+                                tags_count[tag] += 1
+                            else:
+                                tags_count[tag] = 1
+
+                    # 按标签出现次数降序排序
+                    sorted_tags = sorted(tags_count, key=tags_count.get, reverse=True)
+
+                # 获取所有视频信息
+                video_sql = '''
+                SELECT video_info.*, auth_user.username, auth_user.avatar_path,
+                       video_info.id AS video_id  
+                FROM video_info 
+                LEFT JOIN auth_user ON auth_user.id = video_info.author_id
+                '''
+                cursor.execute(video_sql)
                 result = cursor.fetchall()
                 columns = [column[0] for column in cursor.description]
-                rows = [dict(zip(columns, row)) for row in result]
+                videos = [dict(zip(columns, row)) for row in result]
 
-                # 使用 id 去重
-                unique_rows = {row['video_id']: row for row in rows}.values()
-
-                # 如果去重后视频不足 15 个，补满并允许重复选择
-                if len(unique_rows) < 15:
-                    # 允许重复，扩展列表
-                    extended_rows = list(unique_rows) * (15 // len(unique_rows) + 1)
-                    random_arr = random.sample(extended_rows, 15)
+                # 依据标签排序视频
+                if user_id:
+                    # 筛选含有高频标签的视频
+                    tagged_videos = [video for video in videos if
+                                     any(tag in video['tags'].split(',') for tag in sorted_tags)]
+                    other_videos = [video for video in videos if video not in tagged_videos]
+                    recommended_videos = tagged_videos[:15] + other_videos[:(15 - len(tagged_videos))]
                 else:
-                    # 如果视频数量充足，从去重后的视频中随机选择15个
-                    random_arr = random.sample(list(unique_rows), 15)
-                sql='''
-                select count(*) as 'watch_count' from watch_table where video_id=%s
+                    # 用户未登录，直接随机选取视频
+                    recommended_videos = random.sample(videos, 15) if len(videos) >= 15 else videos * (15 // len(
+                        videos) + 1)[:15]
+
+                # 获取每个视频的观看次数
+                watch_count_sql = '''
+                SELECT COUNT(*) AS watch_count FROM watch_table WHERE video_id = %s
                 '''
+                for video in recommended_videos:
+                    cursor.execute(watch_count_sql, [video['video_id']])
+                    video['watch_count'] = cursor.fetchone()[0]
+                    video.pop('password', None)
+                    video.pop('email', None)
+                    video.pop('id', None)
 
-                for row in random_arr:
-                    cursor.execute(sql,[row.get('video_id')])
-                    row['watch_count']=cursor.fetchone()[0]
-                    row.pop('id', None)
-                    row.pop('password',None)
-                    row.pop('email',None)
-
-
-                # 返回 JSON 响应
-                return JsonResponse({'status': 200, 'data': random_arr},status=200)
+                # 返回推荐视频
+                return JsonResponse({'status': 200, 'data': recommended_videos}, status=200)
 
         except Exception as e:
-            logger.error(e)
+            logger.error(f'{self.request_path(request)} 错误信息: {e}')
             return Response({'status': 500, 'msg': '服务器错误'}, status=500)
