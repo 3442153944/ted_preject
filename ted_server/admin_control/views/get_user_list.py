@@ -25,8 +25,9 @@ class GetUserList(APIView):
             admin_id = request.user.id
             if is_auth:
                 with connection.cursor() as cursor:
-                    limit = request.post.get('limit', 10)
-                    offset = request.post.get('offset', 0)
+                    data=json.loads(request.body.decode('utf-8'))
+                    limit=data.get('limit', 10)
+                    offset=data.get('offset', 0)
 
                     permission_sql = '''select is_superuser from auth_user where id=%s'''
                     cursor.execute(permission_sql, [admin_id])
@@ -38,7 +39,10 @@ class GetUserList(APIView):
                     '''
                     cursor.execute(get_user_list_sql, [limit, offset])
                     user_list = self.format_result(cursor)
-                    return JsonResponse({'status': 200, 'data': user_list}, status=200)
+                    total_sql = '''select count(*) from auth_user'''
+                    cursor.execute(total_sql)
+                    total = cursor.fetchone()[0]
+                    return JsonResponse({'status': 200, 'data': user_list,'total':total}, status=200)
 
         except Exception as e:
             logger.error(self.request_path(request) + str(e))
