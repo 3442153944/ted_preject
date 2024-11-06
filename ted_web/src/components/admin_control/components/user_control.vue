@@ -2,6 +2,10 @@
   <div class="user_control">
     <div class="content">
         <div>用户管理</div>
+        <div class="search_box">
+            <input type="text" placeholder="请输入用户名/id" v-model="search">
+            <span>搜索</span>
+        </div>
         <div class="item_list" v-if="user_list.length > 0">
             <div class="item" v-for="(item,index) in user_list" :key="index">
                 <div class="user_box">
@@ -34,20 +38,46 @@
                         <div class="email">
                             邮箱：{{ (item.email?item.email:'无邮箱') }}
                         </div>
+                        <div class="btn_box">
+                            <span class="edit hover" @click="set_edit_user_info_show(item)">编辑</span>
+                            <span class="delete hover">删除用户</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    <edit_user_info v-if="edit_user_info_show" @close_page="close_edit_user_info_show()" 
+    :user_info="choose_user_info"></edit_user_info>
     <div class="check_point" ref="check_point"></div>
   </div>
 </template>
 
 <script setup>
-import {ref,onMounted,onUnmounted} from 'vue'
+import {ref,onMounted,onUnmounted,watch} from 'vue'
 import {useRouter} from 'vue-router'
 import { useStore } from 'vuex';
 import get_user_list from '../ts/get_user_list';
+import edit_user_info from './edit_user_info.vue';
+
+//搜索
+let search=ref()
+
+watch(search,async()=>{
+    console.log(search.value)
+})
+
+//编辑用户信息框显示
+let edit_user_info_show = ref(false)
+let choose_user_info = ref(null)
+
+function set_edit_user_info_show(item){
+    edit_user_info_show.value = true;
+    choose_user_info.value = item
+}
+function close_edit_user_info_show(){
+    edit_user_info_show.value = false;
+}
 
 const router = useRouter()
 const store = useStore()
@@ -136,5 +166,33 @@ onUnmounted(() => {
     flex-direction: column;
     gap:10px;
 }
-
+.btn_box{
+    display: flex;
+    gap:10px;
+}
+.edit{
+    padding: 10px 17.5px;
+    background-color: rgba(0,150,250,1);
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+.delete{
+    padding: 10px 17.5px;
+    background-color: rgb(247, 23, 23);
+    cursor: pointer;
+    border-radius: 5px;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+.hover:hover{
+    transition: all 0.3s;
+    opacity: 0.8;
+    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.4);
+}
 </style>
