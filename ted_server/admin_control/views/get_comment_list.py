@@ -21,7 +21,8 @@ class GetCommentList(BaseAPIView):
             select comment_table.id as comm_id,comment_table.video_id as comm_to_video_id,
             comment_table.comment_content ,comment_table.send_user_id as comm_send_time,
              comment_table.reply_comment_id,auth_user.username as username,auth_user.id as user_id,
-             auth_user.avatar_path ,video_info.id as video_id,video_info.title as video_title
+             auth_user.avatar_path ,video_info.id as video_id,video_info.title as video_title,
+             comment_table.send_time as comm_send_time
              from comment_table 
              left join auth_user on auth_user.id=comment_table.send_user_id
              left join video_info on video_info.id=comment_table.video_id
