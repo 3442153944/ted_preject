@@ -13,7 +13,7 @@ class GetDynamicList(BaseAPIView):
         if admin_auth:
             return admin_auth
         try:
-            data = json.loads(request.body.decode('uft-8'))
+            data = json.loads(request.body.decode('utf-8'))
             limit = data.get('limit', 10)
             offset = data.get('offset', 0)
             with connection.cursor() as cursor:
