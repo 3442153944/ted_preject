@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views.admin_check import AdminCheck
+from .views.delete_user import DeleteUser
+from .views.delete_video import DeleteVideo
 from .views.edit_user_info import EditUserInfo
 from .views.get_user_list import GetUserList
 from .views.get_video_list import GetVideoList
@@ -20,4 +22,8 @@ urlpatterns = [
     # 搜索用户
     path('GetVideoList/',GetVideoList.as_view(),name='GetVideoList'),
     # 获取视频列表
+    path('DeleteUser/',DeleteUser.as_view(),name='DeleteUser'),
+    # 删除用户
+    path('DeleteVideo/',DeleteVideo.as_view(),name='DeleteVideo'),
+    # 删除视频
 ]

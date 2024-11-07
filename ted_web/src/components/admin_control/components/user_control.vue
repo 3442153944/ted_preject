@@ -25,7 +25,7 @@
                             <div class="email">邮箱：{{ item.email || '无邮箱' }}</div>
                             <div class="btn_box">
                                 <span class="edit hover" @click="set_edit_user_info_show(item)">编辑</span>
-                                <span class="delete hover">删除用户</span>
+                                <span class="delete hover" @click="del_user(item.id)">删除用户</span>
                             </div>
                         </div>
                     </div>
@@ -45,6 +45,7 @@ import { useStore } from 'vuex';
 import get_user_list from '../ts/get_user_list';
 import edit_user_info from './edit_user_info.vue';
 import searchUser from '../ts/search_user';
+import delete_user from '../ts/delete_user';
 
 // 搜索框
 let search = ref('');
@@ -114,6 +115,15 @@ function set_edit_user_info_show(item) {
 
 function close_edit_user_info_show() {
     edit_user_info_show.value = false;
+}
+
+//删除用户
+async function del_user(id){
+    alert('确定删除该用户吗？');
+    let res = await delete_user(id);
+    if(res.status === 200){
+        await resetUserList();
+    }
 }
 
 // 组件挂载和卸载时的操作
