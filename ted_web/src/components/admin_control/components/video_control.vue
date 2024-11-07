@@ -1,110 +1,163 @@
 <template>
   <div class="video_control">
     <div class="content">
-        <div>视频管理</div>
-        <div class="video_list">
-          <div class="item" v-for="(item,index) in video_list" :key="index">
-            <div class="video_item">
-              <div class="video_box">
-                <video :src="'http://localhost:8000/static/video/'+item.video_file_path"
-                 :poster="'http://localhost:8000/static/img/img/'+item.video_cover_path" 
-                 preload="auto" muted="true" controls></video>
+      <div>视频管理</div>
+      <div class="search_box">
+        <span>搜索视频</span>
+        <input
+          type="text"
+          placeholder="请输入视频标题/id/用户名/用户ID"
+          v-model="search_type"
+        />
+      </div>
+      <div class="video_list" v-if="video_list.length > 0">
+        <div class="item" v-for="(item, index) in video_list" :key="index">
+          <div class="video_item">
+            <div class="video_box">
+              <video
+                :src="'http://localhost:8000/static/video/' + item.video_file_path"
+                :poster="'http://localhost:8000/static/img/img/' + item.video_cover_path"
+                preload="auto"
+                muted="true"
+                controls
+              ></video>
+            </div>
+            <div class="video_info">
+              <div class="info_item">
+                <span>视频标题：{{ item.video_title }}</span>
               </div>
-              <div class="video_info">
-                <div class="info_item">
-                  <span>视频标题：{{item.video_title}}</span>
-                </div>
-                <div class="info_item">
-                  <span>视频作着：{{item.username}}</span>
-                </div>
-                <div class="info_item">
-                  <span>视频介绍：{{item.video_introduce}}</span>
-                </div>
-                <div class="info_item">
-                  <span>视频投稿时间：{{item.create_time}}</span>
-                </div>
-                <div class="info_item">
-                  <span>视频标签：{{item.video_tags}}</span>
-                </div>
-                <div class="info_item">
-                  <span>播放量：{{item.watch_count}}&nbsp;喜欢：{{item.like_count}}&nbsp;收藏：{{item.collect_count}}</span>
-                </div>
-                <div class="info_item">
-                  <div class="user_info">
-                    <div class="avatar">
-                      <img :src="'http://localhost:8000/static/img/thumbnail/'+item.avatar_path+'.png'" alt="头像">
-                    </div>
-                    <div class="username">
-                      <span>{{item.username}}</span>
-                    </div>
-                  </div>
-                </div>
-                <div class="btn_box">
-                  <span class="delete hover" @click="del_video(item.video_id)">删除</span>
-                </div>
+              <div class="info_item">
+                <span>视频作者：{{ item.username }}</span>
+              </div>
+              <div class="info_item">
+                <span>视频介绍：{{ item.video_introduce }}</span>
+              </div>
+              <div class="info_item">
+                <span>视频投稿时间：{{ item.create_time }}</span>
+              </div>
+              <div class="info_item">
+                <span>视频标签：{{ item.video_tags }}</span>
+              </div>
+              <div class="info_item">
+                <span>播放量：{{ item.watch_count }} 喜欢：{{ item.like_count }} 收藏：{{ item.collect_count }}</span>
+              </div>
+              <div class="btn_box">
+                <span class="delete hover" @click="del_video(item.video_id)">删除</span>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </div>
     <div class="check_point" ref="check_point"></div>
   </div>
 </template>
 
 <script setup>
-import {ref,onMounted,onUnmounted} from 'vue'
-import get_video_list from '../ts/get_video_list';
-import delete_video from '../ts/delete_video';
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+import get_video_list from '../ts/get_video_list'
+import delete_video from '../ts/delete_video'
+import search_video from '../ts/search_video'
 
-let video_list=ref([])
+// 搜索参数
+const search_type = ref('')
+const search_limit = ref(10)
+const search_offset = ref(0)
+const search_total = ref(0)
 
-let check_point = ref(null)
-let limit=ref(10)
-let offset=ref(0)
-let total=ref(0)
+// 视频列表
+const video_list = ref([])
 
-//检查是否需要加载更多
-let obs=new IntersectionObserver(async (entries)=>{
-  entries.forEach(async (entry)=>{
-    if(entry.isIntersecting){
-      offset.value+=limit.value
-      let res=await get_video_list(limit.value,offset.value)
-      if(res.status==200){
-        total.value=res.data.total
-        video_list.value=video_list.value.concat(res.data)
-      }
-    }
-  })
-},{
-  root:null,
-  rootMargin:'200px',
-  threshold:0
-})
+// 滚动加载分页参数
+const limit = ref(10)
+const offset = ref(0)
+const total = ref(0)
 
-//删除视频
-async function del_video(id){
-  alert('确定删除该视频吗？')
-  let res=await delete_video(id)
-  if(res.status==200){
-    video_list.value=video_list.value.filter(item=>item.id!=id)
-    console.log('删除成功');
+// 搜索模式标识
+let isSearching = ref(false)
+
+// 获取搜索结果
+async function get_search_result() {
+  const res = await search_video(search_type.value, search_limit.value, search_offset.value)
+  if (res.status === 200) {
+    search_total.value = res.total
+    video_list.value = res.data
   }
 }
 
-onMounted(async ()=>{
-  let res=await get_video_list(limit.value,offset.value)
-  if(res.status==200){
-    total.value=res.data.total
-    video_list.value=res.data
+// 获取普通视频列表
+async function get_initial_videos() {
+  const res = await get_video_list(limit.value, offset.value)
+  if (res.status === 200) {
+    total.value = res.total
+    video_list.value = res.data
   }
-  obs.observe(check_point.value)
+}
+
+// 加载更多视频（普通或搜索模式）
+async function load_more_videos() {
+  if (isSearching.value) {
+    search_offset.value += search_limit.value
+    const res = await search_video(search_type.value, search_limit.value, search_offset.value)
+    if (res.status === 200) {
+      video_list.value = video_list.value.concat(res.data)
+    }
+  } else {
+    offset.value += limit.value
+    const res = await get_video_list(limit.value, offset.value)
+    if (res.status === 200) {
+      video_list.value = video_list.value.concat(res.data)
+    }
+  }
+}
+
+// 删除视频
+async function del_video(id) {
+  if (confirm('确定删除该视频吗？')) {
+    const res = await delete_video(id)
+    if (res.status === 200) {
+      video_list.value = video_list.value.filter(item => item.video_id !== id)
+      console.log('删除成功')
+    }
+  }
+}
+
+// 监听输入变化并触发搜索
+watch(search_type, async (newValue) => {
+  isSearching.value = !!newValue
+  search_offset.value = 0
+  offset.value = 0
+  if (isSearching.value) {
+    await get_search_result()
+  } else {
+    await get_initial_videos()
+  }
 })
 
-onUnmounted(()=>{
-  obs.disconnect()
+// 滚动观察器
+const check_point = ref(null)
+const observer = new IntersectionObserver(async (entries) => {
+  for (const entry of entries) {
+    if (entry.isIntersecting) {
+      await load_more_videos()
+    }
+  }
+}, {
+  root: null,
+  rootMargin: '200px',
+  threshold: 0
 })
 
+onMounted(async () => {
+  await get_initial_videos()
+  observer.observe(check_point.value)
+})
+
+onUnmounted(() => {
+  observer.disconnect()
+})
 </script>
+
 
 <style scoped>
 .video_control{
@@ -118,6 +171,14 @@ onUnmounted(()=>{
   height: auto;
   display: flex;
   flex-direction: column;
+}
+.search_box{
+  width: fit-content;
+  display: flex;
+  align-items: center;
+  gap:10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
 }
 .video_list{
   width: 100%;

@@ -43,3 +43,9 @@ class BaseAPIView(APIView):
             return JsonResponse({'status': 403, 'msg': '权限不足，管理员认证失败'}, status=403)
 
         return None  # 权限验证通过
+    def format_result(self, cursor):
+        """通用数据库查询结果格式化"""
+        result = []
+        columns = cursor.description
+        rows = [dict(zip([column[0] for column in columns], row)) for row in cursor.fetchall()]
+        return rows
