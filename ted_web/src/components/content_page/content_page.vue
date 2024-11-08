@@ -47,8 +47,8 @@
                         </div>
                     </div>
                 </div>
-                <speaker_box :user_info="main_video_info"/>
-                <div class="send_comment_box">
+                <speaker_box :user_info="main_video_info" v-if="main_video_info"/>
+                <div class="send_comment_box" v-if="user_info">
                     <div class="send_user_avatar">
                         <img :src="'http://localhost:8000/static/img/thumbnail/'+user_info.avatar_path+'.png'">
                     </div>
@@ -132,6 +132,7 @@ async function interaction_video_a(video_id,interaction_type){
         }
         else{
             console.log(res)
+            store.commit('set_global_msg','请先登录')
         }
     }
     catch (error) {

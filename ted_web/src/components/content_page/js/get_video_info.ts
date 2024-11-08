@@ -1,10 +1,11 @@
 async function get_video_info(video_id: any) {
     try{
+        const token=localStorage.getItem('auth_token')
         const res=await fetch('http://localhost:8000/api/video/GetVideoInfo/',{
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + localStorage.getItem('auth_token')
+                'Authorization': token ? `Bearer ${token}` : ''  // 如果有 token，则使用，否则不添加
             },
             body: JSON.stringify({
                 video_id: video_id

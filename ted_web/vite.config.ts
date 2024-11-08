@@ -11,7 +11,7 @@ export default defineConfig({
     VueDevTools(),
     VueSetupExtension(),
     //mkcert()
-    electron({
+    /*electron({
       main: {
         entry: 'electron/main.js', // 指向Electron的主进程入口文件
       },
@@ -19,7 +19,7 @@ export default defineConfig({
         input: 'electron/preload.js', // 指向预加载脚本
       },
       // 其他Electron相关配置
-    }),
+    }),*/
   ],
   server: {
     port:10000,

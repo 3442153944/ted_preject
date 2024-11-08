@@ -1,4 +1,6 @@
 from django.db import connection
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from datetime import datetime
 from ..log.log import Logger
@@ -19,6 +21,8 @@ class GetVideoInfo(APIView):
 
     def post(self,request,*args,**kwargs):
         try:
+            permission_classes = [AllowAny]  # 允许所有用户访问
+            authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]  # 配置认证类
             data=json.loads(request.body.decode('utf-8'))
             user_id=request.user.id
             video_id=data.get('video_id',False)

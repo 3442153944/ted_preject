@@ -50,14 +50,18 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:10000",  # 添加这个地址
     "http://127.0.0.1:10000",  # 或者这个
     "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
 ]
 # 跨域允许列表
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:10000",
     "http://127.0.0.1:10000",
     "http://localhost:5173",
-    "http://127.0.0.1:5173"
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
 ]
 
 # CORS settings
@@ -92,9 +96,11 @@ MIDDLEWARE = [
 
 #JWT自动认证配置
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
 }
 
 SIMPLE_JWT = {

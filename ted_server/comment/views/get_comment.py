@@ -1,3 +1,5 @@
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from django.db import connection
 import json
@@ -22,6 +24,8 @@ class GetComment(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
+            permission_classes = [AllowAny]  # 允许所有用户访问
+            authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]  # 配置认证类
             data = json.loads(request.body.decode('utf-8'))
             video_id = data.get('video_id', None)
             limit = data.get('limit', 10)

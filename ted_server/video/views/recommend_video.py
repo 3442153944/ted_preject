@@ -1,5 +1,7 @@
 from django.db import connection
 from django.http import JsonResponse
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.shortcuts import render
@@ -23,9 +25,22 @@ class RecommendVideo(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
+            permission_classes = [AllowAny]  # 允许所有用户访问
+            authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]  # 配置认证类
             user_id = request.user.id if request.user.is_authenticated else None
 
             with connection.cursor() as cursor:
+                # 获取所有视频信息
+                video_sql = '''
+                              SELECT video_info.*, auth_user.username, auth_user.avatar_path,
+                                     video_info.id AS video_id  
+                              FROM video_info 
+                              LEFT JOIN auth_user ON auth_user.id = video_info.author_id
+                              '''
+                cursor.execute(video_sql)
+                result = cursor.fetchall()
+                columns = [column[0] for column in cursor.description]
+                videos = [dict(zip(columns, row)) for row in result]
                 # 如果用户已登录，获取用户观看过的视频标签
                 if user_id:
                     get_watch_list = '''
@@ -49,30 +64,23 @@ class RecommendVideo(APIView):
 
                     # 按标签出现次数降序排序
                     sorted_tags = sorted(tags_count, key=tags_count.get, reverse=True)
-
-                # 获取所有视频信息
-                video_sql = '''
-                SELECT video_info.*, auth_user.username, auth_user.avatar_path,
-                       video_info.id AS video_id  
-                FROM video_info 
-                LEFT JOIN auth_user ON auth_user.id = video_info.author_id
-                '''
-                cursor.execute(video_sql)
-                result = cursor.fetchall()
-                columns = [column[0] for column in cursor.description]
-                videos = [dict(zip(columns, row)) for row in result]
-
-                # 依据标签排序视频
-                if user_id:
                     # 筛选含有高频标签的视频
                     tagged_videos = [video for video in videos if
                                      any(tag in video['tags'].split(',') for tag in sorted_tags)]
                     other_videos = [video for video in videos if video not in tagged_videos]
                     recommended_videos = tagged_videos[:15] + other_videos[:(15 - len(tagged_videos))]
                 else:
-                    # 用户未登录，直接随机选取视频
-                    recommended_videos = random.sample(videos, 15) if len(videos) >= 15 else videos * (15 // len(
-                        videos) + 1)[:15]
+                    print('未登录用户')
+                    # 用户未登录，直接随机选取视频，以视频ID为索引随机选取，不足时从已有的列表中选取
+                    #获取ID列表
+                    video_ids = [video['video_id'] for video in videos]
+                    recommended_videos = []
+                    for i in range(15):
+                        try:
+                            recommended_videos.append(videos[video_ids.index(i)])
+                        except:
+                            recommended_videos.append(random.choice(videos))
+                    print(recommended_videos)
 
                 # 获取每个视频的观看次数
                 watch_count_sql = '''
@@ -84,6 +92,7 @@ class RecommendVideo(APIView):
                     video.pop('password', None)
                     video.pop('email', None)
                     video.pop('id', None)
+                #print(recommended_videos)
 
                 # 返回推荐视频
                 return JsonResponse({'status': 200, 'data': recommended_videos}, status=200)

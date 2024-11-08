@@ -120,7 +120,7 @@ let user=JSON.parse(localStorage.getItem('user'))
 
 let now=new Date()
 //主评论消息结构
-let main_comment_msg=ref({
+/*let main_comment_msg=ref({
   "avatar_path":user.avatar_path,
   "send_user_id":user.id,
   "comment_content":"主评论",
@@ -154,7 +154,7 @@ let sub_comment_msg=ref({
   "re_user_id":2,
   "re_username":"test_user",
   "is_follow":false
-})
+})*/
 
 let main_comment_list = ref([]); // 主评论列表
 let main_total = ref(0); // 主评论总数
