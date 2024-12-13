@@ -25,12 +25,11 @@
           <span @click="show_history_page()">历史</span>
         </div>
         <div class="lable_item lable_item_hover">
-          <span>消息</span>
+          <span>关注</span>
           <div class="lable_item_dropdown">
-            <span>项目1</span>
-            <span>项目2</span>
-            <span>项目3</span>
-            <span>项目4</span>
+            <span @click="show_follow_page()">关注列表</span>
+            <span @click="show_fans_page()">粉丝列表</span>
+            <!-- <span @click="show_message_page()">消息列表</span> -->
           </div>
         </div>
         <div class="lable_item lable_item_hover" v-if="!is_login">
@@ -96,6 +95,18 @@ function show_dynamic_page() {
 //跳转历史浏览
 function show_history_page() {
   router.push('/history_page')
+}
+//跳转关注列表
+function show_follow_page() {
+  router.push('/follow_list')
+}
+//跳转粉丝列表
+function show_fans_page() {
+  router.push('/fans_list')
+}
+//跳转消息列表
+function show_message_page() {
+  router.push('/msg_box')
 }
 
 //点击其他地方隐藏搜索框

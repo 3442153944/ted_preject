@@ -21,6 +21,7 @@ const store = createStore<RootState>({
         global_msg: '',//全局通知消息
         comment_msg: '',//评论消息
         main_comment_index:null,//如果是子评论将会记录父评论的索引
+        user:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user') as string):null,
     },
     mutations: {
         SET_SINGLE_PAGE_STATUS(state:any, { key = '', value = false }) {
@@ -104,7 +105,8 @@ const store = createStore<RootState>({
         other_user_id: (state:any) => state.other_user_id,
         global_msg: (state:any) => state.global_msg,
         comment_msg: (state:any) => state.comment_msg,//评论内容
-        main_comment_index: (state:any) => state.main_comment_index//主评论索引，如果为主评论该项为null
+        main_comment_index: (state:any) => state.main_comment_index,//主评论索引，如果为主评论该项为null
+        user:(state:any)=>state.user,//用户信息
     },
     // 添加持久化插件
     plugins: [

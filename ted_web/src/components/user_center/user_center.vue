@@ -8,10 +8,11 @@
           <index_video_list :video_list="user_info.data.user_videos" v-if="background_ready"></index_video_list>
         </div>
         <div class="my_video" v-if="page_item=='投稿'">
-          <my_video :video_list="user_info.data.user_videos" v-if="background_ready"></my_video>
+          <my_video :video_list="user_info.data.user_videos" :dynamic_list="user_info.data.dynamic_info" v-if="background_ready"></my_video>
         </div>
         <div class="collect" v-if="page_item=='收藏'">
-          <collect_video  v-if="background_ready" :video_list="user_info.data.collected_videos"></collect_video>
+          <collect_video  v-if="background_ready" :video_list="user_info.data.collected_videos"
+          ></collect_video>
         </div>
         <div class="user_info" v-if="page_item=='个人信息'">
           <user_info_1 v-if="background_ready" :user_info="user_info.data.user_info"></user_info_1>

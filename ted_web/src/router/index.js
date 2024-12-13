@@ -11,6 +11,9 @@ import other_user_center from '../components/other_user_center/index_page.vue'
 import dynamic_page from '../components/dynamic_page/dynamic_index.vue'
 import history_page from '../components/head_page/history_page.vue'
 import admin_index from '../components/admin_control/admin_index.vue'
+import fans_list from '../components/head_page/components/fans_list.vue'
+import follow_list from '../components/head_page/components/follow_list.vue'
+import msg_box from '../components/head_page/components/msg_box.vue'
 
 const routes = [
   {
@@ -54,6 +57,21 @@ const routes = [
             path:'history_page',
             name:'history_page',
             component:history_page//历史页面
+          },
+          {
+            path:'follow_list',
+            name:'follow_list',
+            component:follow_list//关注列表
+          },
+          {
+            path:'fans_list',
+            name:'fans_list',
+            component:fans_list//粉丝列表
+          },
+          {
+            path:'msg_box',
+            name:'msg_box',
+            component:msg_box//消息盒子
           }
         ]
       }

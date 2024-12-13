@@ -10,6 +10,7 @@ from .log.log import Logger
 
 logger = Logger()
 
+
 class GetOtherUserInfo(APIView):
     def request_path(self, request):
         request_path = request.path
@@ -23,15 +24,15 @@ class GetOtherUserInfo(APIView):
 
     def post(self, request):
         try:
-            data=json.loads(request.body.decode('utf-8'))
+            data = json.loads(request.body.decode('utf-8'))
             request_user_id = request.user.id
-            user_id = data.get('user_id',None)
+            user_id = data.get('user_id', None)
             if user_id is None:
                 return JsonResponse({'status': 400, 'msg': '参数错误'}, status=400)
 
             with connection.cursor() as cursor:
                 #请求者是否关注了被查询者
-                sql='''
+                sql = '''
                 select * from follow_table where operation_user_id=%s and target_user_id=%s and follow_status=1
                 '''
                 cursor.execute(sql, (request_user_id, user_id))
@@ -57,7 +58,7 @@ class GetOtherUserInfo(APIView):
 
                 # 删除密码字段
                 user_data.pop('password', None)
-                user_data.pop('email',None)
+                user_data.pop('email', None)
 
                 # 获取用户收藏的视频
                 collected_video_sql = '''
@@ -71,6 +72,21 @@ class GetOtherUserInfo(APIView):
                 video_columns = [column[0] for column in cursor.description]
                 collected_video_info = [dict(zip(video_columns, video)) for video in collected_videos]
 
+                # 获取用户发送的动态列表
+                dynamic_sql = """
+                               select * from dynamic_table where send_user_id=%s
+                               """
+
+                cursor.execute(collected_video_sql, (user_id,))
+                collected_videos = cursor.fetchall()
+                video_columns = [column[0] for column in cursor.description]
+                collected_video_info = [dict(zip(video_columns, video)) for video in collected_videos]
+
+                cursor.execute(dynamic_sql, (user_id,))
+                dynamic_info = cursor.fetchall()
+                dynamic_columns = [column[0] for column in cursor.description]
+                dynamic_info = [dict(zip(dynamic_columns, dynamic)) for dynamic in dynamic_info]
+
                 # 获取用户发布的视频
                 user_video_sql = '''
                 SELECT * FROM video_info WHERE author_id = %s
@@ -79,46 +95,47 @@ class GetOtherUserInfo(APIView):
                 user_videos = cursor.fetchall()
                 user_video_info = [dict(zip(video_columns, video)) for video in user_videos]
                 if user_video_info:
-                    watch_sql='''
+                    watch_sql = '''
                     select count(*) from watch_table where video_id=%s
                     '''
-                    like_sql='''
+                    like_sql = '''
                     select count(*) from like_table where video_id=%s
                     '''
-                    collect_sql='''
+                    collect_sql = '''
                     select count(*) from collect_table where video_id=%s
                     '''
                     for row in user_video_info:
-                        cursor.execute(watch_sql,(row['id'],))
-                        row['watch_count']=cursor.fetchone()[0]
-                        cursor.execute(like_sql,(row['id'],))
-                        row['like_count']=cursor.fetchone()[0]
-                        cursor.execute(collect_sql,(row['id'],))
-                        row['collect_count']=cursor.fetchone()[0]
+                        cursor.execute(watch_sql, (row['id'],))
+                        row['watch_count'] = cursor.fetchone()[0]
+                        cursor.execute(like_sql, (row['id'],))
+                        row['like_count'] = cursor.fetchone()[0]
+                        cursor.execute(collect_sql, (row['id'],))
+                        row['collect_count'] = cursor.fetchone()[0]
 
                 if collected_video_info:
-                    watch_sql='''
+                    watch_sql = '''
                     select count(*) from watch_table where video_id=%s
                     '''
-                    like_sql='''
+                    like_sql = '''
                     select count(*) from like_table where video_id=%s
                     '''
-                    collect_sql='''
+                    collect_sql = '''
                     select count(*) from collect_table where video_id=%s
                     '''
                     for row in collected_video_info:
-                        cursor.execute(watch_sql,(row['id'],))
-                        row['watch_count']=cursor.fetchone()[0]
-                        cursor.execute(like_sql,(row['id'],))
-                        row['like_count']=cursor.fetchone()[0]
-                        cursor.execute(collect_sql,(row['id'],))
-                        row['collect_count']=cursor.fetchone()[0]
+                        cursor.execute(watch_sql, (row['id'],))
+                        row['watch_count'] = cursor.fetchone()[0]
+                        cursor.execute(like_sql, (row['id'],))
+                        row['like_count'] = cursor.fetchone()[0]
+                        cursor.execute(collect_sql, (row['id'],))
+                        row['collect_count'] = cursor.fetchone()[0]
 
                 # 组合数据
                 response_data = {
                     'user_info': user_data,
                     'collected_videos': collected_video_info,
                     'user_videos': user_video_info,
+                    'dynamic_info': dynamic_info,
                     'is_followed': is_followed
                 }
 

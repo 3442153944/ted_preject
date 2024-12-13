@@ -16,6 +16,10 @@
                     @click="page_index = 2">
                     <span>收藏</span>
                 </div>
+                <div class="change_item" @mouseover="updateBackItemPosition(3)" @mouseleave="resetBackItemPosition"
+                    @click="page_index = 3">
+                    <span>动态</span>
+                </div>
 
                 <!-- 背景随动的盒子 -->
                 <div class="back_item" :style="{ left: `${backItemPosition}px` }"></div>
@@ -25,6 +29,7 @@
                 <index_page :user_info="user_info" v-if="page_index === 0 && user_info.data"></index_page>
                 <submit_works :user_info="user_info" v-if="page_index === 1 && user_info.data"></submit_works>
                 <collect_video :user_info="user_info" v-if="page_index === 2 && user_info.data"></collect_video>
+                <dynamic_page :dynamic_list="user_info.data.dynamic_info" v-if="page_index === 3 && user_info.data"></dynamic_page>
             </div>
         </div>
     </div>
@@ -39,6 +44,7 @@ import get_all_user_info from './js/get_all_userinfo'
 import index_page from './components/index_page.vue'
 import submit_works from './components/submit_works.vue'
 import collect_video from './components/collect_works.vue'
+import dynamic_page from './components/dynamic_page.vue'
 
 const router = useRouter()
 const store = useStore()

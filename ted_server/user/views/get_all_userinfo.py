@@ -52,10 +52,21 @@ class GetAllUserInfo(APIView):
                 JOIN video_info ON collect_table.video_id = video_info.id
                 WHERE collect_table.user_id = %s
                 '''
+
+                #获取用户发送的动态列表
+                dynamic_sql="""
+                select * from dynamic_table where send_user_id=%s
+                """
+
                 cursor.execute(collected_video_sql, (user_id,))
                 collected_videos = cursor.fetchall()
                 video_columns = [column[0] for column in cursor.description]
                 collected_video_info = [dict(zip(video_columns, video)) for video in collected_videos]
+
+                cursor.execute(dynamic_sql, (user_id,))
+                dynamic_info=cursor.fetchall()
+                dynamic_columns=[column[0] for column in cursor.description]
+                dynamic_info=[dict(zip(dynamic_columns, dynamic)) for dynamic in dynamic_info]
 
                 # 获取用户发布的视频
                 user_video_sql = '''
@@ -104,7 +115,8 @@ class GetAllUserInfo(APIView):
                 response_data = {
                     'user_info': user_data,
                     'collected_videos': collected_video_info,
-                    'user_videos': user_video_info
+                    'user_videos': user_video_info,
+                    'dynamic_info':dynamic_info
                 }
 
             return JsonResponse({'status': 200, 'msg': '获取成功', 'data': response_data}, status=200)
