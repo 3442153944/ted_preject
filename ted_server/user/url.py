@@ -14,6 +14,7 @@ from .views.get_follow_list import GetFollowList
 from .views.get_other_user_info import GetOtherUserInfo
 from .views.get_userinfo import GetUserInfo
 from .views.get_watch_list import GetWatchList
+from .views.record_subscriber import RecordSubscriber
 from .views.register import RegisterView
 from .views.update_follow import UpdateFollow
 from .views.update_top_video import UpdateTopVideo
@@ -53,4 +54,6 @@ urlpatterns = [
     # 获取用户关注列表
     path('GetFansList/', GetFansList.as_view(), name='GetFansList'),
     # 获取用户的粉丝列表
+    path('RecordSubscriber/', RecordSubscriber.as_view(), name='RecordSubscriber'),
+    # 记录用户订阅
 ]
