@@ -53,12 +53,15 @@
 <script setup>
 import { ref, defineProps, defineEmits, computed } from "vue";
 import update_top_video from "../js/update_top_video";
+import { useStore } from "vuex";
+
+const store = useStore();
 
 const props = defineProps({
     video_list: Array
 });
 
-const emit = defineEmits(['update_user_info', 'close_page']);
+const emit = defineEmits(['update_user_info', 'close_page','page_reload']);
 
 let colse_page = () => {
     emit('close_page');
@@ -96,7 +99,9 @@ async function submit_update() {
     if (res.status == 200) {
         emit('update_user_info');
         colse_page();
+        emit('page_reload');
     }
+    store.commit('set_global_msg',res.status?'更新置顶视频成功':`失败，${res.msg}`)
 }
 </script>
 

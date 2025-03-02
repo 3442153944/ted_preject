@@ -17,6 +17,11 @@ const store = createStore<RootState>({
         pushTimer: null,
         video_id: '',
         is_login: false,
+        other_user_id: '',
+        global_msg: '',//全局通知消息
+        comment_msg: '',//评论消息
+        main_comment_index:null,//如果是子评论将会记录父评论的索引
+        user:localStorage.getItem('user')?JSON.parse(localStorage.getItem('user') as string):null,
     },
     mutations: {
         SET_SINGLE_PAGE_STATUS(state:any, { key = '', value = false }) {
@@ -72,6 +77,18 @@ const store = createStore<RootState>({
         },
         set_login_status(state:any, is_login:any) {
             state.is_login = is_login;
+        },
+        set_other_user_id(state:any, other_user_id:any) {
+            state.other_user_id = other_user_id;
+        },
+        set_global_msg(state:any, global_msg:any) {
+            state.global_msg = global_msg;
+        },
+        set_comment_msg(state:any, comment_msg:any) {
+            state.comment_msg = comment_msg;
+        },
+        set_main_comment_index(state:any, main_comment_index:any) {
+            state.main_comment_index = main_comment_index;
         }
     },
     actions: {
@@ -84,7 +101,12 @@ const store = createStore<RootState>({
         index_page_show: (state:any) => state.pageStatus.index_page_show,
         register_page_show: (state:any) => state.pageStatus.register_page_show,
         video_id: (state:any) => state.video_id,
-        is_login: (state:any) => state.is_login
+        is_login: (state:any) => state.is_login,
+        other_user_id: (state:any) => state.other_user_id,
+        global_msg: (state:any) => state.global_msg,
+        comment_msg: (state:any) => state.comment_msg,//评论内容
+        main_comment_index: (state:any) => state.main_comment_index,//主评论索引，如果为主评论该项为null
+        user:(state:any)=>state.user,//用户信息
     },
     // 添加持久化插件
     plugins: [

@@ -47,7 +47,7 @@
                     <span style="font-size: 12px;">每天收到一封包含最新谈话热门内容的快速组合的电子邮件。</span>
                     <div class="input_box">
                         <input type="text" placeholder="你的电子邮箱是什么？" v-model="email">
-                        <div class="btn">
+                        <div class="btn" @click="submit()">
                             <span>订阅</span>
                         </div>
                     </div>
@@ -63,8 +63,37 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useStore } from 'vuex';
+
+const store = useStore()
 
 let email = ref('')
+
+async function submit(){
+    try{
+        const res=await fetch('http://localhost:8000/api/user/RecordSubscriber/',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                email:email.value
+            })
+        })
+        if(res.ok){
+            store.commit('set_global_msg','订阅成功')
+        }
+        else{
+            store.commit('set_global_msg','订阅失败')
+        }
+    }
+    catch(e)
+    {
+        console.log(e)
+    }
+}
+
+
 </script>
 
 <style scoped>

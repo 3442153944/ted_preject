@@ -9,13 +9,23 @@ https://docs.djangoproject.com/en/5.0/howto/deployment/asgi/
 
 import os
 
+import django
 from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from channels.auth import AuthMiddlewareStack
+
+from ted_server import routing
 from video import url
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ted_server.settings')
+django.setup()
 
-application = get_asgi_application()
-
+application = ProtocolTypeRouter({
+    "http": get_asgi_application(),
+    "websocket": AuthMiddlewareStack(
+        URLRouter(
+            routing.websocket_urlpatterns
+        )
+    ),
+})
 

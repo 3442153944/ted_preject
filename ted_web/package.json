@@ -2,11 +2,13 @@
   "name": "ted_web",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonjs",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
+    "electron:serve": "concurrently \"npm run dev\" \"wait-on http://localhost:10000 && electron .\"",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "electron:build": "vue-tsc -b && vite build && electron-builder"
   },
   "dependencies": {
     "video.js": "^7.21.6",
@@ -20,9 +22,36 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.1.2",
+    "@vitejs/plugin-vue": "^5.1.4",
+    "concurrently": "^7.6.0",
+    "electron": "^26.2.1",
+    "electron-builder": "^24.6.0",
+    "electron-reload": "^2.0.0-alpha.1",
     "typescript": "^5.5.3",
     "vite": "^5.4.1",
-    "vue-tsc": "^2.0.29"
+    "vite-plugin-electron": "^0.28.8",
+    "vue-tsc": "^2.0.29",
+    "wait-on": "^7.0.1"
+  },
+  "build": {
+    "productName": "YourAppName",
+    "appId": "com.example.yourapp",
+    "files": [
+      "dist/**/*",
+      "main.js",
+      "preload.js"
+    ],
+    "directories": {
+      "output": "dist_electron"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

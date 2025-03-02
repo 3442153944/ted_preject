@@ -1,4 +1,6 @@
 from django.db import connection
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from datetime import datetime
 from ..log.log import Logger
@@ -19,6 +21,8 @@ class GetVideoInfo(APIView):
 
     def post(self,request,*args,**kwargs):
         try:
+            permission_classes = [AllowAny]  # 允许所有用户访问
+            authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]  # 配置认证类
             data=json.loads(request.body.decode('utf-8'))
             user_id=request.user.id
             video_id=data.get('video_id',False)
@@ -53,9 +57,15 @@ class GetVideoInfo(APIView):
                     cursor.execute(is_collect_sql,[video_id,user_id])
                     is_collect=cursor.fetchone()
                     row_dict['is_collect']=bool(is_collect)
+                    is_follow_sql='''
+                    select * from follow_table where follow_status=1 and target_user_id=%s and operation_user_id=%s
+                    '''
+                    cursor.execute(is_follow_sql,[row_dict['author_id'],user_id])
+                    is_follow=cursor.fetchone()
+                    row_dict['is_follow']=bool(is_follow)
                     return JsonResponse({'status':200,'msg':'获取成功','data':row_dict},status=200)
             else:
-                return JsonResponse({'status':400,'msg':'参数错误'},status=400)
+                return JsonResponse({'status':200,'msg':'用户没有发布视频'},status=200)
 
         except Exception as e:
             logger.error(e)

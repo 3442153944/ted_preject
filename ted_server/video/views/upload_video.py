@@ -7,10 +7,12 @@ from django.http import JsonResponse
 from ..log.log import Logger
 from .re_write_img import ReWriteImg
 from .append_file import AppendFile
-from django.db import connection,transaction,DatabaseError
+from django.db import connection, transaction, DatabaseError
+import uuid
 
 re_write_img = ReWriteImg()
 logger = Logger()
+
 
 class UploadVideo(APIView):
     def __init__(self):
@@ -70,6 +72,10 @@ class UploadVideo(APIView):
             if is_end in ['true', True]:
                 cover_filename = request.POST.get('cover_filename')
                 data = json.loads(request.POST.get('video_info'))
+                # 保存到数据库
+                save_status = self.save_to_database(data, request.user.id, video_chunk_filename, cover_filename+'.png')
+                if not save_status:
+                    return JsonResponse({'status': 500, 'msg': '数据库保存失败'}, status=500)
                 # 合并完成，修改后缀并返回
                 final_file_path = os.path.join(self.video_save_path, video_chunk_filename + '.mp4')
                 self.append_file_handler.complete_file(temp_file_path, final_file_path)
@@ -79,15 +85,14 @@ class UploadVideo(APIView):
                 cover_dest_path = os.path.join(self.video_cover_path, cover_filename + '.png')
                 self.move_file(cover_src_path, cover_dest_path)
 
-                # 保存到数据库
-                self.save_to_database(data, request.user.id, video_chunk_filename, cover_filename)
                 return JsonResponse({
                     'status': 200,
                     'msg': '视频上传成功',
                     'video_filename': video_chunk_filename,
                     'video_path': final_file_path,
                     'cover_filename': cover_filename,
-                    'data': data
+                    'data': data,
+                    'all_success': True
                 }, status=200)
 
             return JsonResponse({'status': 200, 'msg': '当前分片上传成功', 'now_index': chunk_index}, status=200)
@@ -100,27 +105,29 @@ class UploadVideo(APIView):
     def save_to_database(self, data, user_id, video_filename, cover_filename):
         now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         try:
-            with connection.cursor() as cursor:
-                cursor.execute('''INSERT INTO video_info 
-                    (title, author, author_id, introduce, create_time, tags, 
-                    video_file_path, video_status, video_cover_path) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''', [
-                    data.get('title', '未命名'),
-                    data.get('author', ''),
-                    user_id,
-                    data.get('introduce', ''),
-                    now,
-                    data.get('tags', ''),
-                    (video_filename + '.mp4'),
-                    1,
-                    cover_filename
-                ])
-                if cursor.rowcount != 1:
-                    raise DatabaseError('插入数据条数错误，已回滚操作')
+            with transaction.atomic():
+                with connection.cursor() as cursor:
+                    tags = ','.join(data.get('tags', []))
+                    cursor.execute('''INSERT INTO video_info 
+                        (title, author, author_id, introduce, create_time, tags, 
+                        video_file_path, video_status, video_cover_path) 
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''', [
+                        data.get('title', '未命名'),
+                        data.get('author', ''),
+                        user_id,
+                        data.get('introduce', ''),
+                        now,
+                        tags,
+                        (video_filename + '.mp4'),
+                        1,
+                        cover_filename
+                    ])
+                    if cursor.rowcount != 1:
+                        raise DatabaseError('插入数据条数错误，已回滚操作')
                 return True
         except Exception as e:
             print(e)
-            return JsonResponse({'status':500,'msg':'插入数据时发生错误'},status=200)
+            return False
 
     # 保存文件
     def save_file(self, path, file_content):
@@ -130,7 +137,7 @@ class UploadVideo(APIView):
 
     def generate_unique_filename(self, path):
         while True:
-            filename = ''.join([str(i) for i in os.urandom(21)])
+            filename = str(uuid.uuid4())
             if not os.path.exists(os.path.join(path, filename + '.mp4')) and not os.path.exists(
                     os.path.join(path, filename + '.png')):
                 return filename

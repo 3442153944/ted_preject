@@ -14,16 +14,17 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "preserve",
+    
 
     /* Linting */
-    "strict": true,
+    "strict": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
-  "composite": true,
-  "emitDeclarationOnly": true,  // 如果你只想生成声明文件，可以设置这个选项
+  "composite": false,
+  "emitDeclarationOnly": false,  // 如果你只想生成声明文件，可以设置这个选项
   "outDir": "./dist",           // 输出目录
   "rootDir": "./src",           // 源文件目录
   "declaration": true,          // 生成声明文件

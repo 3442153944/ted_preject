@@ -6,7 +6,7 @@
                     <!-- 主视频播放器 -->
                     <video class="main-video" controls 
                     :src="'http://localhost:8000/static/video/'+main_video_info.video_file_path" 
-                    @timeupdate="updateMainVideoTime"></video>
+                    @timeupdate="updateMainVideoTime" preload="auto"></video>
                     <div class="info_item">
                         <div class="main_video_tite">
                             {{main_video_info.title}}
@@ -47,12 +47,12 @@
                         </div>
                     </div>
                 </div>
-                <speaker_box :user_info="main_video_info"/>
-                <div class="send_comment_box">
+                <speaker_box :user_info="main_video_info" v-if="main_video_info"/>
+                <div class="send_comment_box" v-if="user_info">
                     <div class="send_user_avatar">
                         <img :src="'http://localhost:8000/static/img/thumbnail/'+user_info.avatar_path+'.png'">
                     </div>
-                    <comment_input_box :video_id="video_id" :comment_type="'comment'" />
+                    <comment_input_box :video_id="video_id" :comment_type="'comment'" @comment="get_main_comment($event)"/>
                 </div>
                 <comment_box></comment_box>
                 <div class="the_end_page_box">
@@ -86,6 +86,15 @@ console.log(video_id.value)
 let user_info=ref(JSON.parse(localStorage.getItem('user')))
 console.log(user_info.value)
 let main_video_info=ref({})
+
+let comment=ref()
+
+//获取主评论
+function get_main_comment(e){
+    comment.value=e
+    //向全局消息发送主评论内容
+    store.commit('set_comment_msg',comment.value)
+}
 
 // 主视频的播放路径
 const video_path = ref('src/assets/video/v1.mp4')
@@ -123,6 +132,7 @@ async function interaction_video_a(video_id,interaction_type){
         }
         else{
             console.log(res)
+            store.commit('set_global_msg','请先登录')
         }
     }
     catch (error) {

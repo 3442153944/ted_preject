@@ -8,7 +8,10 @@
                         :muted="isMuted"
                         @loadedmetadata="setDuration(index)" 
                         @mouseenter="mouseEnter(index)" 
-                        @mouseleave="mouseLeave(index)"></video>
+                        @mouseleave="mouseLeave(index)"
+                        :poster="'http://localhost:8000/static/img/img/' + item.video_cover_path"
+                        >
+                    </video>
                         <div class="video_time">
                             {{ item.duration }}
                         </div>

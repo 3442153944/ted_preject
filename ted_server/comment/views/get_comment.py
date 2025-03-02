@@ -1,3 +1,5 @@
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication, TokenAuthentication
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from django.db import connection
 import json
@@ -22,6 +24,8 @@ class GetComment(APIView):
 
     def post(self, request, *args, **kwargs):
         try:
+            permission_classes = [AllowAny]  # 允许所有用户访问
+            authentication_classes = [SessionAuthentication, BasicAuthentication, TokenAuthentication]  # 配置认证类
             data = json.loads(request.body.decode('utf-8'))
             video_id = data.get('video_id', None)
             limit = data.get('limit', 10)
@@ -66,6 +70,10 @@ class GetComment(APIView):
                     # 获取评论总数
                     cursor.execute('SELECT COUNT(*) FROM comment_table WHERE video_id = %s', [video_id])
                     total = cursor.fetchone()[0]
+                    user_id = request.user.id
+                    is_follow_sql='''
+                    select * from follow_table where follow_status=1 and operation_user_id=%s and target_user_id=%s
+                    '''
 
                     # 删除不需要的字段
                     rows = {'rows': rows, 'total': total}
@@ -73,6 +81,10 @@ class GetComment(APIView):
                         row.pop('id', None)
                         row.pop('password', None)
                         row.pop('email', None)
+                        cursor.execute(is_follow_sql,[user_id,row['user_id']])
+                        result=cursor.fetchone()
+                        row['is_follow']=bool(result)
+
 
                     return JsonResponse({'status': 200, 'msg': '获取评论成功', 'data': rows}, status=200)
 

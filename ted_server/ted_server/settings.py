@@ -25,7 +25,7 @@ DATABASES = {
             'charset': 'utf8mb4',
         },
         'CONN_MAX_AGE': 600,
-        'ATOMIC_REQUESTS': True,
+        'ATOMIC_REQUESTS': False,
     }
 }
 
@@ -45,15 +45,23 @@ TEMPLATES = [
     },
 ]
 
-#跨域允许列表
+# 跨域允许列表
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:10000",  # 添加这个地址
     "http://127.0.0.1:10000",  # 或者这个
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
 ]
-#跨域允许列表
+# 跨域允许列表
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:10000",
-    "http://127.0.0.1:10000"
+    "http://127.0.0.1:10000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000"
 ]
 
 # CORS settings
@@ -67,8 +75,9 @@ INSTALLED_APPS = [
     "user.apps.UserConfig",
     "comment.apps.CommentConfig",
     "video.apps.VideoConfig",
-    "search.apps.SearchConfig"  # Enable CORS support
-    #'channels',  #websoket支持
+    "search.apps.SearchConfig",  # Enable CORS support
+    'channels',
+    "admin_control.apps.AdminControlConfig"  # websocket支持
 ]
 
 MIDDLEWARE = [
@@ -87,9 +96,11 @@ MIDDLEWARE = [
 
 #JWT自动认证配置
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
+     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ],
 }
 
 SIMPLE_JWT = {
@@ -112,15 +123,8 @@ STATIC_URL = 'static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',  # 将静态文件存放在项目的 static 文件夹中
 ]
-#配置websoket
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}
+
+ASGI_APPLICATION='ted_server.asgi.application'
 
 # 禁用 CSRF Cookie
 CSRF_COOKIE_HTTPONLY = False  # CSRF 不再依赖 cookies，禁用该选项
